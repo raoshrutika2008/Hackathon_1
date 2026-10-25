@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KhataVoice | Smart Kirana Command Center</title>
+    <meta
+      name="description"
+      content="KhataVoice is an ambient POS and inventory command center for Indian kirana stores, powered by speech-driven udhaar and stock tracking."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-badge">KV</div>
+          <div>
+            <p class="eyebrow">Ambient POS • Inventory • Udhaar</p>
+            <h1>KhataVoice</h1>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="waveform" aria-label="live audio waveform">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="transcript-panel">
+            <p class="caption">Live voice</p>
+            <p id="liveTranscript">"Raju bhai ke khate mein do kilo aata, ek Amul butter, aur godown mein Maggi ke paanch box kam ho gaye."</p>
+          </div>
+
+          <button id="micButton" class="mic-button" type="button" aria-label="Start voice capture">
+            <span class="mic-core">🎙</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="panel-grid">
+        <section class="panel pos-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Live counter</p>
+              <h2>Bill & GST slip</h2>
+            </div>
+            <span class="pill success">Live</span>
+          </div>
+
+          <div class="bill-list" id="billItems"></div>
+
+          <div class="summary-box">
+            <div>
+              <span>Subtotal</span>
+              <strong id="subtotalValue">₹0</strong>
+            </div>
+            <div>
+              <span>GST</span>
+              <strong id="gstValue">₹0</strong>
+            </div>
+            <div class="grand-total">
+              <span>Total</span>
+              <strong id="totalValue">₹0</strong>
+            </div>
+          </div>
+
+          <div class="qr-panel">
+            <div class="qr-block" aria-label="UPI QR code placeholder">
+              <div class="qr-corner top-left"></div>
+              <div class="qr-corner top-right"></div>
+              <div class="qr-corner bottom-left"></div>
+              <div class="qr-corner bottom-right"></div>
+            </div>
+            <div class="upi-copy">
+              <p>UPI Pay</p>
+              <span>upi://pay@khatavoice</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel ledger-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Customer ledger</p>
+              <h2>Smart udhaar khata</h2>
+            </div>
+            <span class="pill warning">4 active</span>
+          </div>
+
+          <div id="customerList" class="customer-list"></div>
+        </section>
+
+        <section class="panel inventory-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Godown</p>
+              <h2>Inventory & auto reorder</h2>
+            </div>
+            <span class="pill danger">Critical</span>
+          </div>
+
+          <div id="inventoryList" class="inventory-list"></div>
+        </section>
+      </main>
+
+      <footer class="bottom-strip">
+        <div class="preset-chips" aria-label="Demo preset chips">
+          <button type="button" class="chip active" data-demo="Raju bhai ke khate mein do kilo aata aur ek Amul butter likh do.">Raju + Atta</button>
+          <button type="button" class="chip" data-demo="Sharma aunty ka khata mein 3 packets Parle G aur sookha chawal de do.">Sharma + Snacks</button>
+          <button type="button" class="chip" data-demo="Godown mein Maggi ke paanch box kam ho gaye, distributor ko order bhejo.">Maggi reorder</button>
+        </div>
+
+        <div class="json-box">
+          <div class="json-header">
+            <span>Structured JSON</span>
+            <span class="status-dot"></span>
+          </div>
+          <pre id="jsonOutput"></pre>
+        </div>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
