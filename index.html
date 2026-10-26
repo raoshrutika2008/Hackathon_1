@@ -1,507 +1,1264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fffaf0">
-  <meta name="description" content="DoodleSquad is your playful online sketchbook for brainstorming, group study, and big ideas.">
-  <title>DoodleSquad — Where Brainstorms Hatch!</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <style>
-    :root{--ink:#28343c;--muted:#7d8990;--paper:#fffdf7;--purple:#7658d8;--coral:#ff807a;--mint:#73d8bb;--line:#e7e0d2}
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;background:#fffaf0;color:var(--ink);font-family:'Fredoka',sans-serif}
-    button,input,textarea{font:inherit}
-    button{cursor:pointer}
-    .hand{font-family:'Patrick Hand',cursive}
-    .kalam{font-family:'Kalam',cursive}
-    .paper-grid{background-color:#fffdf7;background-image:linear-gradient(rgba(102,150,200,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(102,150,200,.13) 1px,transparent 1px);background-size:24px 24px}
-    .paper-lined{background-color:#fffdf7;background-image:repeating-linear-gradient(transparent 0 27px,rgba(96,146,198,.22) 28px,transparent 29px)}
-    .paper-dots{background-color:#fffdf7;background-image:radial-gradient(rgba(97,130,159,.28) 1.25px,transparent 1.25px);background-size:20px 20px}
-    .paper-blackboard{background-color:#243c3a;background-image:radial-gradient(rgba(220,248,227,.10) .8px,transparent .8px);background-size:12px 12px;color:#f5fff6}
-    .wobbly{border:2px solid var(--ink);border-radius:22px 18px 24px 17px/18px 24px 17px 23px;box-shadow:4px 5px 0 rgba(40,52,60,.14)}
-    .wobbly-sm{border:1.5px solid var(--ink);border-radius:13px 11px 14px 10px/11px 14px 10px 13px;box-shadow:2px 3px 0 rgba(40,52,60,.12)}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:1.5px solid var(--ink);border-radius:12px 10px 13px 10px;background:#fff;padding:.65rem .9rem;font-weight:600;box-shadow:2px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s;white-space:nowrap}
-    .btn:hover{transform:translate(1px,1px);box-shadow:1px 2px 0 var(--ink)}
-    .btn:active{transform:translate(2px,3px);box-shadow:none}
-    .btn-primary{background:#ffd95d}
-    .btn-purple{background:#e8e1ff}
-    .btn-coral{background:#ffe0dc}
-    .top-link{font-size:.92rem;font-weight:600;color:#47545b;transition:color .15s}
-    .top-link:hover{color:#7658d8}
-    .brand-mark{display:grid;place-items:center;width:42px;height:42px;border:2px solid var(--ink);border-radius:14px 10px 15px 11px;background:#ffe48a;box-shadow:2px 3px 0 var(--ink);font-size:22px;transform:rotate(-5deg)}
-    .hero-doodle{position:absolute;right:4%;top:8%;font-size:38px;transform:rotate(12deg);filter:drop-shadow(2px 3px 0 #ffd95d)}
-    .tool-btn{width:39px;height:39px;display:grid;place-items:center;border:1.5px solid transparent;border-radius:11px;background:transparent;color:#58646a}
-    .tool-btn:hover{background:#f3efff}
-    .tool-btn.active{border-color:#7658d8;background:#eee8ff;color:#6045c5;box-shadow:0 2px 0 #7658d8}
-    .swatch{width:23px;height:23px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px #c9c6bd;transition:transform .15s}
-    .swatch:hover{transform:scale(1.15)}
-    .swatch.active{box-shadow:0 0 0 2px var(--ink);transform:scale(1.12)}
-    .studio-shell{position:relative;overflow:hidden}
-    .board-stage{position:relative;overflow:hidden;touch-action:none;min-height:430px;height:min(58vw,560px);max-height:560px}
-    #boardCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
-    .board-objects{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-    .board-object{position:absolute;pointer-events:auto;touch-action:none;user-select:none;cursor:grab}
-    .board-object:active{cursor:grabbing}
-    .sticky-note{width:148px;min-height:128px;padding:17px 13px 12px;box-shadow:3px 5px 8px rgba(33,40,42,.18);transform:rotate(var(--tilt,2deg));border-radius:2px 4px 3px 2px}
-    .sticky-note:before{content:"";position:absolute;top:0;left:0;right:0;height:10px;background:rgba(255,255,255,.28)}
-    .sticky-note textarea{position:relative;display:block;width:100%;height:92px;resize:none;border:0;outline:0;background:transparent;color:#3c4647;font-family:'Kalam',cursive;font-size:16px;line-height:1.35}
-    .delete-object{position:absolute;right:5px;top:4px;width:21px;height:21px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(255,255,255,.62);color:#555;font-size:11px}
-    .sticker{font-size:42px;filter:drop-shadow(2px 3px 0 rgba(43,51,55,.15));line-height:1}
-    .cursor-bubble{position:absolute;z-index:4;pointer-events:none;transition:left 1.5s ease-in-out,top 1.5s ease-in-out}
-    .cursor-bubble i{font-size:16px;filter:drop-shadow(1px 2px 1px white)}
-    .cursor-bubble span{display:block;margin:3px 0 0 10px;border:1px solid rgba(40,52,60,.15);border-radius:7px 7px 7px 1px;background:#fff;padding:2px 6px;font-size:10px;white-space:nowrap;box-shadow:1px 2px 3px #0001}
-    .online-dot{width:9px;height:9px;border-radius:50%;background:#42c98b;box-shadow:0 0 0 3px #e5fff1;animation:pulse 1.8s infinite}
-    @keyframes pulse{50%{box-shadow:0 0 0 6px #e5fff14d}}
-    .laser-scan{position:absolute;z-index:5;pointer-events:none;left:0;right:0;height:4px;top:0;background:linear-gradient(90deg,transparent,#ff626d,#fff,#ff626d,transparent);box-shadow:0 0 16px 4px #ff737788;opacity:0}
-    .laser-scan.run{animation:scan 1.15s ease-in-out}
-    @keyframes scan{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
-    .toast{position:fixed;left:50%;bottom:24px;z-index:50;transform:translate(-50%,20px);opacity:0;pointer-events:none;border:1.5px solid var(--ink);border-radius:12px;background:#fff;padding:11px 17px;box-shadow:3px 4px 0 var(--ink);font-weight:600;transition:.25s}
-    .toast.show{transform:translate(-50%,0);opacity:1}
-    .chat-drawer{position:fixed;z-index:30;right:18px;bottom:18px;width:min(360px,calc(100vw - 36px));height:440px;display:flex;flex-direction:column;transform:translateY(calc(100% + 30px));transition:transform .28s ease}
-    .chat-drawer.open{transform:translateY(0)}
-    .chat-messages{flex:1;overflow:auto}
-    .message{max-width:86%;padding:9px 11px;border-radius:12px 12px 12px 3px;background:#f2efff;font-size:14px}
-    .message.mine{margin-left:auto;border-radius:12px 12px 3px 12px;background:#fff1c8}
-    .chat-fab{position:fixed;right:22px;bottom:22px;z-index:25}
-    .squad-card,.feature-card,.polaroid{transition:transform .2s}
-    .squad-card:hover,.feature-card:hover{transform:translateY(-4px) rotate(-.5deg)}
-    .feature-card{background:#fff;border:1.5px solid #343e43;border-radius:18px 15px 19px 14px;box-shadow:3px 4px 0 #343e43}
-    .polaroid{background:white;padding:11px 11px 18px;box-shadow:2px 4px 0 #28343c;border:1.5px solid #28343c;transform:rotate(var(--tilt))}
-    .polaroid:hover{transform:rotate(0) translateY(-4px)}
-    .avatar{display:grid;place-items:center;width:49px;height:49px;border-radius:50%;border:2px solid #343e43;background:#fff0bd;font-size:25px}
-    .toolbar-divider{width:1px;height:32px;background:#e6e1d7}
-    .range{accent-color:#7658d8;width:100px}
-    @media(max-width:1024px){.nav-links.flex{display:none}}
-    @media(max-width:800px){.board-stage{height:480px}.hero-doodle{display:none}}
-    @media(max-width:560px){.board-stage{height:410px;min-height:410px}.toolbar-wrap{align-items:flex-start}.toolbar-row{flex-wrap:wrap}.swatch{width:20px;height:20px}.sticky-note{width:126px;min-height:116px}.sticky-note textarea{height:80px}.room-badge{font-size:11px}.section-pad{padding-left:18px;padding-right:18px}.brand-tagline{display:none}}
-  </style>
-</head>
-<body>
-  <header class="sticky top-0 z-20 border-b-2 border-[#28343c] bg-[#fffaf0]/95 backdrop-blur">
-    <div class="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-5 py-3 lg:px-8">
-      <a href="#home" class="flex shrink-0 items-center gap-3 no-underline">
-        <span class="brand-mark" aria-hidden="true">✏️</span>
-        <span><span class="block text-xl font-bold leading-none">DoodleSquad</span><span class="brand-tagline hand text-[13px] text-[#748087]">Where Brainstorms Hatch! 🐣</span></span>
-      </a>
-      <nav class="nav-links flex items-center gap-5" aria-label="Main navigation">
-        <a class="top-link" href="#canvas">Canvas Sandbox</a><a class="top-link" href="#superpowers">Superpowers</a><a class="top-link" href="#squad">Study Squads</a><a class="top-link" href="#fame">Wall of Fame</a>
-      </nav>
-      <div class="flex items-center gap-2">
-        <div class="room-badge hidden items-center gap-1 rounded-full border border-[#c8ead8] bg-[#eafff2] px-3 py-2 text-xs font-semibold text-[#26724f] sm:flex"><span class="online-dot"></span><span>SQUAD-8492</span><span class="text-[#9bbca9]">•</span><span>LIVE</span></div>
-        <button id="copyInvite" class="btn hidden !px-3 !py-2 text-sm sm:inline-flex" title="Copy invite link"><i class="fa-regular fa-copy"></i><span class="hidden md:inline">Copy Invite Link</span></button>
-        <a href="#canvas" class="btn btn-primary !px-3 !py-2 text-sm">Try Sandbox <span>↘</span></a>
-      </div>
-    </div>
-  </header>
-  <main id="home">
-    <section class="relative mx-auto max-w-[1440px] px-5 pb-7 pt-12 text-center md:pt-16">
-      <span class="hero-doodle" aria-hidden="true">✦</span>
-      <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-[#e8d7a1] bg-[#fff4cf] px-4 py-1.5 text-sm font-semibold text-[#745d28]"><span>🐣</span> YOUR SQUAD'S FAVORITE STUDY SPOT</div>
-      <h1 class="mx-auto max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-6xl">Big ideas start with<br><span class="relative inline-block text-[#7658d8]">little doodles<span class="absolute -bottom-1 left-0 h-2 w-full -rotate-1 rounded-full bg-[#ffd95d] opacity-75"></span></span></h1>
-      <p class="hand mx-auto mt-5 max-w-xl text-xl text-[#718087]">A cozy corner of the internet to think out loud, make a mess, and figure it out together.</p>
-      <div class="mt-6 flex justify-center gap-3"><a href="#canvas" class="btn btn-primary">Start doodling <i class="fa-solid fa-arrow-down"></i></a><a href="#squad" class="btn btn-purple"><i class="fa-solid fa-users"></i> Meet the squad</a></div>
-    </section>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoodleSquad - Fun & Creative Student Collaboration</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <!-- FontAwesome v6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <section id="canvas" class="mx-auto max-w-[1440px] px-4 pb-14 md:px-8">
-      <div class="studio-shell wobbly bg-white">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-dashed border-[#e8e2d8] px-4 py-3 sm:px-6">
-          <div class="flex items-center gap-3">
-            <div class="flex -space-x-2" aria-label="Three squad members online"><span class="avatar !h-9 !w-9 !text-lg">👩🏻‍🎨</span><span class="avatar !h-9 !w-9 !text-lg !bg-[#dff5ec]">🧑🏽‍💻</span><span class="avatar !h-9 !w-9 !text-lg !bg-[#ffe0dc]">👩🏼‍🔬</span></div>
-            <div><div class="font-semibold">The Brainstorm Bunch <span class="ml-1 text-xs text-[#8c969b]">3 doodlers here</span></div><div class="hand text-sm text-[#929b9f]">Last saved just now</div></div>
-          </div>
-          <button id="chatOpenTop" class="btn !px-3 !py-2 text-sm"><i class="fa-regular fa-comments text-[#7658d8]"></i> Squad chat <span class="rounded-full bg-[#ff807a] px-1.5 text-xs text-white">2</span></button>
-        </div>
-        <div class="toolbar-wrap flex flex-wrap items-center justify-between gap-3 bg-[#fffefa] px-3 py-3 sm:px-5">
-          <div class="toolbar-row flex items-center gap-1">
-            <button class="tool-btn active" data-tool="pen" aria-label="Pen" title="Pen"><i class="fa-solid fa-pen"></i></button>
-            <button class="tool-btn" data-tool="highlighter" aria-label="Highlighter" title="Highlighter"><i class="fa-solid fa-highlighter"></i></button>
-            <button class="tool-btn" data-tool="eraser" aria-label="Eraser" title="Eraser"><i class="fa-solid fa-eraser"></i></button>
-            <button class="tool-btn" data-tool="laser" aria-label="Laser pointer" title="Laser pointer"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-            <span class="toolbar-divider mx-2"></span>
-            <div class="flex items-center gap-2" aria-label="Ink color">
-              <button class="swatch active" data-color="#2D3436" style="background:#2D3436" aria-label="Charcoal"></button><button class="swatch" data-color="#FF7675" style="background:#FF7675" aria-label="Coral"></button><button class="swatch" data-color="#6C5CE7" style="background:#6C5CE7" aria-label="Indigo"></button><button class="swatch" data-color="#FFD93D" style="background:#FFD93D" aria-label="Yellow"></button><button class="swatch" data-color="#55E6C1" style="background:#55E6C1" aria-label="Mint"></button><button class="swatch" data-color="#74B9FF" style="background:#74B9FF" aria-label="Sky blue"></button>
-            </div>
-          </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <label class="flex items-center gap-2 text-sm text-[#6d777c]" title="Brush thickness"><i class="fa-solid fa-circle text-[8px]"></i><input id="brushSize" class="range" type="range" min="2" max="30" value="5" aria-label="Brush thickness"><span id="brushLabel" class="w-8 text-right font-semibold text-[#37434a]">5px</span></label>
-            <span class="toolbar-divider hidden sm:block"></span>
-            <select id="paperStyle" class="rounded-lg border border-[#d9d3c8] bg-white px-2 py-2 text-sm font-medium outline-none focus:border-[#7658d8]" aria-label="Paper style"><option value="grid">▦ Grid notebook</option><option value="lined">☰ Lined paper</option><option value="dots">⠿ Dot grid</option><option value="blackboard">▩ Blackboard</option></select>
-          </div>
-        </div>
-        <div class="flex flex-wrap items-center justify-between gap-2 border-y border-[#ece7de] bg-[#fcfbf7] px-3 py-2.5 sm:px-5">
-          <div class="flex flex-wrap items-center gap-2">
-            <button id="addNote" class="btn !border-[#e3ca6a] !bg-[#fff3b7] !px-3 !py-2 text-sm !shadow-[2px_3px_0_#dac761]"><i class="fa-regular fa-note-sticky"></i> Sticky note</button>
-            <div class="flex items-center gap-1" aria-label="Add mascot sticker">
-              <span class="mr-1 hidden text-xs font-semibold text-[#858f93] sm:inline">Stickers</span>
-              <button class="sticker-add rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff]" data-sticker="🦉" aria-label="Add owl sticker">🦉</button><button class="sticker-add rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff]" data-sticker="🚀" aria-label="Add rocket sticker">🚀</button><button class="sticker-add rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff]" data-sticker="🐱" aria-label="Add cat sticker">🐱</button><button class="sticker-add hidden rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff] sm:inline" data-sticker="✏️" aria-label="Add pencil sticker">✏️</button><button class="sticker-add hidden rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff] sm:inline" data-sticker="💡" aria-label="Add idea sticker">💡</button><button class="sticker-add hidden rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff] sm:inline" data-sticker="⭐" aria-label="Add star sticker">⭐</button><button class="sticker-add hidden rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff] sm:inline" data-sticker="🧪" aria-label="Add lab sticker">🧪</button><button class="sticker-add hidden rounded-lg px-1.5 py-1 text-xl hover:bg-[#f3efff] sm:inline" data-sticker="📚" aria-label="Add book sticker">📚</button>
-            </div>
-          </div>
-          <div class="flex items-center gap-1">
-            <button id="undoBtn" class="tool-btn" aria-label="Undo" title="Undo"><i class="fa-solid fa-rotate-left"></i></button><button id="redoBtn" class="tool-btn" aria-label="Redo" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
-            <button id="clearBtn" class="btn btn-coral !px-3 !py-2 text-sm"><i class="fa-regular fa-trash-can"></i><span class="hidden sm:inline">Clear board</span></button>
-            <button id="neatifyBtn" class="btn btn-primary !px-3 !py-2 text-sm"><i class="fa-solid fa-wand-magic-sparkles"></i><span class="hidden sm:inline">AI Neatify Doodle</span><span class="sm:hidden">Neatify</span></button>
-          </div>
-        </div>
-        <div id="boardStage" class="board-stage paper-grid">
-          <canvas id="boardCanvas" aria-label="Interactive drawing canvas"></canvas>
-          <div id="boardObjects" class="board-objects"></div>
-          <div id="laserScan" class="laser-scan"></div>
-          <div id="peerCursors" class="pointer-events-none absolute inset-0"></div>
-        </div>
-        <div class="flex flex-wrap items-center justify-between gap-2 border-t border-[#ece7de] bg-[#fcfbf7] px-4 py-2.5 text-sm sm:px-5">
-          <div class="flex items-center gap-2 text-[#7d888d]"><span class="online-dot"></span><span>Live with <b class="text-[#455258">Maya, Devon & Chloe</b></span></div>
-          <div class="flex items-center gap-3"><span class="hand text-[#929b9f]">Every great idea starts somewhere ✨</span><button id="exportBtn" class="font-semibold text-[#7658d8] hover:underline"><i class="fa-solid fa-download mr-1"></i>Download board</button></div>
-        </div>
-      </div>
-      <p class="hand mt-4 text-center text-lg text-[#849096]">Psst... your ideas are safe here. Draw, drag, and dream together.</p>
-    </section>
-
-    <section id="superpowers" class="section-pad bg-[#f2edff] px-5 py-16">
-      <div class="mx-auto max-w-6xl">
-        <div class="mb-9 text-center"><div class="mb-2 text-sm font-semibold uppercase tracking-[.18em] text-[#7658d8]">A toolkit for curious minds</div><h2 class="text-3xl font-bold sm:text-4xl">Your squad's superpowers <span>⚡</span></h2><p class="hand mt-2 text-lg text-[#79838a]">Everything you need to turn "what if?" into "we did it!"</p></div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <article class="feature-card p-5"><div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-[#e5dcff] text-2xl">🎨</div><h3 class="text-xl font-semibold">Live Canvas</h3><p class="hand mt-2 text-base text-[#78848a]">Sketch it, shape it, share it. Ideas come alive when you make them together.</p></article>
-          <article class="feature-card p-5"><div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-[#fff0bd] text-2xl">🗒️</div><h3 class="text-xl font-semibold">Sticky Clusters</h3><p class="hand mt-2 text-base text-[#78848a]">Gather every wild thought, then connect the dots into something brilliant.</p></article>
-          <article class="feature-card p-5"><div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-[#dff7ed] text-2xl">🎙️</div><h3 class="text-xl font-semibold">Voice Huddles</h3><p class="hand mt-2 text-base text-[#78848a]">Talk it out, cheer each other on, and make room for every voice.</p></article>
-          <article class="feature-card p-5"><div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-[#ffe4e0] text-2xl">🏅</div><h3 class="text-xl font-semibold">Gamified XP Badges</h3><p class="hand mt-2 text-base text-[#78848a]">Celebrate the small wins and the big "aha!" moments along the way.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section id="squad" class="section-pad mx-auto max-w-6xl px-5 py-16">
-      <div class="mb-9 text-center"><div class="mb-2 text-sm font-semibold uppercase tracking-[.18em] text-[#e38c41]">Meet your study buddies</div><h2 class="text-3xl font-bold sm:text-4xl">The DoodleSquad crew <span>🐾</span></h2><p class="hand mt-2 text-lg text-[#79838a]">A little brainpower, a little rocket fuel, and a whole lot of heart.</p></div>
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <article class="squad-card wobbly-sm bg-[#fff4cf] p-5 text-center"><div class="mx-auto mb-3 grid h-20 w-20 place-items-center rounded-full border-2 border-[#28343c] bg-white text-5xl">🦉</div><h3 class="text-xl font-semibold">Brainy Owl</h3><p class="hand text-[#778288]">The question asker & idea keeper</p></article>
-        <article class="squad-card wobbly-sm bg-[#e4f4ff] p-5 text-center"><div class="mx-auto mb-3 grid h-20 w-20 place-items-center rounded-full border-2 border-[#28343c] bg-white text-5xl">🚀</div><h3 class="text-xl font-semibold">Rocket Bot</h3><p class="hand text-[#778288]">The momentum maker</p></article>
-        <article class="squad-card wobbly-sm bg-[#e7f9ef] p-5 text-center"><div class="mx-auto mb-3 grid h-20 w-20 place-items-center rounded-full border-2 border-[#28343c] bg-white text-5xl">✏️</div><h3 class="text-xl font-semibold">Pencil Pal</h3><p class="hand text-[#778288]">The sketch-it-out sidekick</p></article>
-        <article class="squad-card wobbly-sm bg-[#ffe8e5] p-5 text-center"><div class="mx-auto mb-3 grid h-20 w-20 place-items-center rounded-full border-2 border-[#28343c] bg-white text-5xl">🐱</div><h3 class="text-xl font-semibold">Doodle Cat</h3><p class="hand text-[#778288]">The curious creative</p></article>
-      </div>
-    </section>
-
-    <section id="fame" class="section-pad bg-[#fff2d8] px-5 py-16">
-      <div class="mx-auto max-w-5xl">
-        <div class="mb-10 text-center"><div class="mb-2 text-sm font-semibold uppercase tracking-[.18em] text-[#b87d2e]">Good vibes on the wall</div><h2 class="text-3xl font-bold sm:text-4xl">The Wall of Fame <span>🌟</span></h2><p class="hand mt-2 text-lg text-[#898075]">Little love notes from squads who made something awesome.</p></div>
-        <div class="grid gap-7 md:grid-cols-3">
-          <article class="polaroid" style="--tilt:-2deg"><div class="grid h-36 place-items-center bg-[#d9f2e5] text-6xl">🌱💡</div><p class="hand mt-4 text-lg">"We turned our messy notes into the best science fair idea!"</p><p class="mt-2 text-xs font-semibold uppercase tracking-wider text-[#929b9f]">— The Green Beans, grade 8</p></article>
-          <article class="polaroid" style="--tilt:1.5deg"><div class="grid h-36 place-items-center bg-[#e5ddff] text-6xl">🪐🛸</div><p class="hand mt-4 text-lg">"Group study actually feels like hanging out now."</p><p class="mt-2 text-xs font-semibold uppercase tracking-wider text-[#929b9f]">— Cosmic Crew, grade 10</p></article>
-          <article class="polaroid" style="--tilt:-1deg"><div class="grid h-36 place-items-center bg-[#ffe3d8] text-6xl">📐✨</div><p class="hand mt-4 text-lg">"Finally, a place where all our half-ideas can live!"</p><p class="mt-2 text-xs font-semibold uppercase tracking-wider text-[#929b9f]">— The Triangle Friends, grade 9</p></article>
-        </div>
-      </div>
-    </section>
-  </main>
-  <footer class="bg-[#28343c] px-5 py-8 text-center text-white"><div class="text-xl font-semibold">DoodleSquad <span class="ml-1">✏️</span></div><p class="hand mt-1 text-[#d0d7d9]">Made for curious minds and kind collaborators. Keep doodling! 🐣</p></footer>
-
-  <button id="chatFab" class="chat-fab btn btn-purple rounded-full !px-4 !py-3" aria-label="Open squad chat"><i class="fa-regular fa-comments"></i> Squad chat</button>
-  <aside id="chatDrawer" class="chat-drawer wobbly bg-white" aria-label="Squad chat" aria-hidden="true">
-    <div class="flex items-center justify-between border-b border-[#eee8dd] px-4 py-3"><div><h2 class="font-semibold">Squad chat 💬</h2><p class="text-xs text-[#899297]">A little encouragement goes a long way</p></div><button id="chatClose" class="tool-btn" aria-label="Close chat"><i class="fa-solid fa-xmark"></i></button></div>
-    <div id="chatMessages" class="chat-messages space-y-3 p-4">
-      <div class="text-xs font-semibold text-[#96a0a4]">Maya L. · just now</div><div class="message">This is such a good idea! Keep going ✨</div>
-      <div class="text-right text-xs font-semibold text-[#96a0a4]">Devon V. · 1 min ago</div><div class="message mine">I added a few notes to the board 📝</div>
-      <div class="text-xs font-semibold text-[#96a0a4]">Chloe B. · 2 min ago</div><div class="message">We got this, squad! 🙌</div>
-    </div>
-    <div class="border-t border-[#eee8dd] p-3"><div class="mb-2 flex gap-2"><button class="reaction rounded-lg bg-[#fff3d2] px-2 py-1" data-reaction="🔥">🔥</button><button class="reaction rounded-lg bg-[#fff3d2] px-2 py-1" data-reaction="⭐">⭐</button><button class="reaction rounded-lg bg-[#fff3d2] px-2 py-1" data-reaction="🧠">🧠</button><button class="reaction rounded-lg bg-[#fff3d2] px-2 py-1" data-reaction="🙌">🙌</button></div><form id="chatForm" class="flex gap-2"><input id="chatInput" class="min-w-0 flex-1 rounded-lg border border-[#dad4ca] px-3 py-2 text-sm outline-none focus:border-[#7658d8]" placeholder="Send a note..." maxlength="240" aria-label="Chat message"><button class="btn btn-primary !px-3 !py-2" aria-label="Send message"><i class="fa-solid fa-paper-plane"></i></button></form></div>
-  </aside>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script>
-    (() => {
-      'use strict';
-      const canvas = document.getElementById('boardCanvas');
-      const ctx = canvas.getContext('2d');
-      const stage = document.getElementById('boardStage');
-      const objectsLayer = document.getElementById('boardObjects');
-      const toast = document.getElementById('toast');
-      const colors = {charcoal:'#2D3436',coral:'#FF7675',indigo:'#6C5CE7',yellow:'#FFD93D',mint:'#55E6C1',sky:'#74B9FF'};
-      let strokes = [], redoStack = [], currentStroke = null, drawing = false, activeTool = 'pen', color = colors.charcoal, brushSize = 5, toastTimer, objectId = 0, logicalWidth = 0, logicalHeight = 0;
-      let laserStroke = null, laserTimer = null;
-      const notes = [], stickers = [];
-
-      function showToast(message) {
-        toast.textContent = message;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
-      }
-      function resizeCanvas() {
-        const rect = stage.getBoundingClientRect();
-        const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
-        if (logicalWidth && logicalHeight && (rect.width !== logicalWidth || rect.height !== logicalHeight)) {
-          const scaleX = rect.width / logicalWidth, scaleY = rect.height / logicalHeight;
-          for (const stroke of [...strokes, ...redoStack, ...(currentStroke ? [currentStroke] : [])]) {
-            for (const point of stroke.points) { point.x *= scaleX; point.y *= scaleY; }
-          }
-          for (const el of objectsLayer.querySelectorAll('.board-object')) {
-            el.style.left = `${(parseFloat(el.style.left) || 0) * scaleX}px`;
-            el.style.top = `${(parseFloat(el.style.top) || 0) * scaleY}px`;
-          }
-        }
-        canvas.width = Math.round(rect.width * dpr);
-        canvas.height = Math.round(rect.height * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        logicalWidth = rect.width; logicalHeight = rect.height;
-        drawAll();
-      }
-      function pointFromEvent(event) {
-        const rect = canvas.getBoundingClientRect();
-        return {x:event.clientX - rect.left, y:event.clientY - rect.top, p:event.pressure || .5};
-      }
-      function renderStroke(stroke) {
-        if (!stroke.points.length) return;
-        const pts = stroke.points;
-        ctx.save();
-        ctx.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : stroke.tool === 'highlighter' ? 'multiply' : 'source-over';
-        ctx.globalAlpha = stroke.tool === 'highlighter' ? .28 : stroke.tool === 'laser' ? .65 : 1;
-        ctx.strokeStyle = stroke.tool === 'eraser' ? 'rgba(0,0,0,1)' : stroke.color;
-        ctx.fillStyle = stroke.color;
-        ctx.lineWidth = stroke.tool === 'eraser' ? stroke.size * 2.7 : stroke.size;
-        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-        if (pts.length === 1) { ctx.beginPath(); ctx.arc(pts[0].x, pts[0].y, ctx.lineWidth / 2, 0, Math.PI * 2); ctx.fill(); }
-        else {
-          ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-          for (let i = 1; i < pts.length - 1; i++) {
-            const midX = (pts[i].x + pts[i + 1].x) / 2, midY = (pts[i].y + pts[i + 1].y) / 2;
-            ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY);
-          }
-          const last = pts[pts.length - 1]; ctx.lineTo(last.x, last.y); ctx.stroke();
-        }
-        ctx.restore();
-      }
-      function drawAll() {
-        const rect = stage.getBoundingClientRect();
-        ctx.clearRect(0, 0, rect.width, rect.height);
-        for (const stroke of strokes) renderStroke(stroke);
-        if (laserStroke) renderStroke(laserStroke);
-      }
-      function startDraw(event) {
-        if (event.button !== undefined && event.button !== 0) return;
-        drawing = true; canvas.setPointerCapture(event.pointerId);
-        const pt = pointFromEvent(event);
-        currentStroke = {tool:activeTool, color:activeTool === 'laser' ? '#ff5364' : color, size:activeTool === 'laser' ? Math.max(3, brushSize) : brushSize, points:[pt]};
-        if (activeTool === 'laser') { laserStroke = currentStroke; clearTimeout(laserTimer); }
-        drawAll(); event.preventDefault();
-      }
-      function moveDraw(event) {
-        if (!drawing || !currentStroke) return;
-        currentStroke.points.push(pointFromEvent(event));
-        drawAll();
-      }
-      function endDraw() {
-        if (!drawing || !currentStroke) return;
-        drawing = false;
-        if (currentStroke.tool === 'laser') {
-          laserTimer = setTimeout(() => { laserStroke = null; drawAll(); }, 850);
-        } else {
-          strokes.push(currentStroke); redoStack = [];
-        }
-        currentStroke = null;
-      }
-      canvas.addEventListener('pointerdown', startDraw);
-      canvas.addEventListener('pointermove', moveDraw);
-      canvas.addEventListener('pointerup', endDraw);
-      canvas.addEventListener('pointercancel', endDraw);
-
-      function distanceToSegment(point, a, b) {
-        const dx = b.x - a.x, dy = b.y - a.y;
-        if (dx === 0 && dy === 0) return Math.hypot(point.x - a.x, point.y - a.y);
-        const t = Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy)));
-        return Math.hypot(point.x - (a.x + t * dx), point.y - (a.y + t * dy));
-      }
-      function simplifyRDP(points, epsilon) {
-        if (points.length < 3) return points.slice();
-        let maxDistance = epsilon, index = 0;
-        for (let i = 1; i < points.length - 1; i++) {
-          const distance = distanceToSegment(points[i], points[0], points[points.length - 1]);
-          if (distance > maxDistance) { maxDistance = distance; index = i; }
-        }
-        if (!index) return [points[0], points[points.length - 1]];
-        const left = simplifyRDP(points.slice(0, index + 1), epsilon);
-        const right = simplifyRDP(points.slice(index), epsilon);
-        return left.slice(0, -1).concat(right);
-      }
-      function chaikin(points, iterations) {
-        let result = points.slice();
-        for (let pass = 0; pass < iterations && result.length > 2; pass++) {
-          const next = [result[0]];
-          for (let i = 0; i < result.length - 1; i++) {
-            const a = result[i], b = result[i + 1];
-            next.push({x:.75*a.x + .25*b.x,y:.75*a.y + .25*b.y,p:a.p || .5},{x:.25*a.x + .75*b.x,y:.25*a.y + .75*b.y,p:b.p || .5});
-          }
-          next.push(result[result.length - 1]); result = next;
-        }
-        return result;
-      }
-      function neatify() {
-        const changed = strokes.map(stroke => {
-          if (stroke.points.length < 4 || stroke.tool === 'eraser' || stroke.tool === 'laser') return stroke;
-          const simplified = simplifyRDP(stroke.points, 2.5);
-          return {...stroke, points:chaikin(simplified, 2), smoothed:true};
-        });
-        const scan = document.getElementById('laserScan');
-        scan.classList.remove('run'); void scan.offsetWidth; scan.classList.add('run');
-        strokes = changed; drawAll(); showToast('Doodle polished — your original idea, just smoother ✨');
-      }
-      document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => {
-        activeTool = button.dataset.tool;
-        document.querySelectorAll('[data-tool]').forEach(item => item.classList.toggle('active', item === button));
-        canvas.style.cursor = activeTool === 'eraser' ? 'cell' : activeTool === 'laser' ? 'pointer' : 'crosshair';
-      }));
-      document.querySelectorAll('.swatch').forEach(button => button.addEventListener('click', () => {
-        color = button.dataset.color;
-        document.querySelectorAll('.swatch').forEach(item => item.classList.toggle('active', item === button));
-      }));
-      document.getElementById('brushSize').addEventListener('input', event => {
-        brushSize = Number(event.target.value);
-        document.getElementById('brushLabel').textContent = `${brushSize}px`;
-      });
-      document.getElementById('paperStyle').addEventListener('change', event => {
-        stage.className = `board-stage paper-${event.target.value}`;
-      });
-      document.getElementById('undoBtn').addEventListener('click', () => {
-        if (strokes.length) { redoStack.push(strokes.pop()); drawAll(); }
-      });
-      document.getElementById('redoBtn').addEventListener('click', () => {
-        if (redoStack.length) { strokes.push(redoStack.pop()); drawAll(); }
-      });
-      document.getElementById('clearBtn').addEventListener('click', () => {
-        if (!strokes.length && !objectsLayer.children.length) { showToast('Your board is already fresh!'); return; }
-        strokes = []; redoStack = []; objectsLayer.replaceChildren(); notes.length = 0; stickers.length = 0; drawAll(); showToast('Fresh page! Go make something wonderful.');
-      });
-      document.getElementById('neatifyBtn').addEventListener('click', neatify);
-
-      function clampPosition(el, x, y) {
-        const stageRect = stage.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
-        return {x:Math.max(0,Math.min(stageRect.width - w,x)),y:Math.max(0,Math.min(stageRect.height - h,y))};
-      }
-      function makeDraggable(el) {
-        el.addEventListener('pointerdown', event => {
-          if (event.target.closest('textarea,button')) return;
-          const stageRect = stage.getBoundingClientRect(), elRect = el.getBoundingClientRect();
-          const dx = event.clientX - elRect.left, dy = event.clientY - elRect.top;
-          el.setPointerCapture(event.pointerId);
-          const move = e => {
-            const pos = clampPosition(el,e.clientX - stageRect.left - dx,e.clientY - stageRect.top - dy);
-            el.style.left = `${pos.x}px`; el.style.top = `${pos.y}px`;
-          };
-          const up = () => { el.removeEventListener('pointermove',move); el.removeEventListener('pointerup',up); el.removeEventListener('pointercancel',up); };
-          el.addEventListener('pointermove',move); el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
-          event.stopPropagation();
-        });
-      }
-      const stickyColors = ['#ffe89a','#ffd9dd','#ccecff','#c9f2dd','#e3d8ff'];
-      function addNote() {
-        const el = document.createElement('div'); el.className = 'board-object sticky-note'; el.style.background = stickyColors[notes.length % stickyColors.length]; el.style.setProperty('--tilt',`${[-2,1.5,-1,2][notes.length % 4]}deg`);
-        el.style.left = `${40 + (notes.length % 4) * 44}px`; el.style.top = `${36 + (notes.length % 3) * 35}px`; el.dataset.kind = 'note'; el.dataset.id = `object-${++objectId}`;
-        const remove = document.createElement('button'); remove.className = 'delete-object'; remove.setAttribute('aria-label','Delete sticky note'); remove.textContent = '×'; remove.addEventListener('click',() => { el.remove(); notes.splice(notes.indexOf(el),1); });
-        const area = document.createElement('textarea'); area.maxLength = 150; area.placeholder = 'A little idea...'; area.setAttribute('aria-label','Sticky note text');
-        el.append(remove,area); objectsLayer.append(el); notes.push(el); makeDraggable(el); area.focus();
-      }
-      document.getElementById('addNote').addEventListener('click',addNote);
-      document.querySelectorAll('.sticker-add').forEach(button => button.addEventListener('click',() => {
-        const el = document.createElement('div'); el.className = 'board-object sticker'; el.textContent = button.dataset.sticker; el.dataset.kind = 'sticker'; el.dataset.id = `object-${++objectId}`;
-        el.style.left = `${100 + (stickers.length % 5) * 54}px`; el.style.top = `${70 + (stickers.length % 4) * 47}px`; el.setAttribute('aria-label',`${button.dataset.sticker} sticker; drag to move`);
-        objectsLayer.append(el); stickers.push(el); makeDraggable(el);
-      }));
-
-      async function copyInvite() {
-        const invite = `${location.href.split('#')[0]}#canvas`;
-        try {
-          if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(invite);
-          else {
-            const field = document.createElement('textarea'); field.value = invite; field.style.position = 'fixed'; field.style.opacity = '0'; document.body.append(field); field.select();
-            const copied = document.execCommand('copy'); field.remove();
-            if (!copied) throw new Error('Clipboard copy was rejected by the browser.');
-          }
-          showToast('Invite link copied! Bring your squad along 🐣');
-        } catch (error) { console.error('Could not copy invite link:',error); showToast('Copy was blocked by your browser — you can share the page URL.'); }
-      }
-      document.getElementById('copyInvite').addEventListener('click',copyInvite);
-
-      const drawer = document.getElementById('chatDrawer'), messages = document.getElementById('chatMessages');
-      function setChat(open) {
-        if (!open && drawer.contains(document.activeElement)) document.activeElement.blur();
-        drawer.classList.toggle('open',open);
-        drawer.setAttribute('aria-hidden',String(!open));
-        if (open) document.getElementById('chatInput').focus();
-      }
-      document.getElementById('chatFab').addEventListener('click',() => setChat(true));
-      document.getElementById('chatOpenTop').addEventListener('click',() => setChat(true));
-      document.getElementById('chatClose').addEventListener('click',() => setChat(false));
-      function addChatMessage(text, author, mine) {
-        const label = document.createElement('div'); label.className = `text-xs font-semibold text-[#96a0a4]${mine ? ' text-right' : ''}`; label.textContent = `${author} · just now`;
-        const bubble = document.createElement('div'); bubble.className = `message${mine ? ' mine' : ''}`; bubble.textContent = text;
-        messages.append(label,bubble); messages.scrollTop = messages.scrollHeight;
-      }
-      document.getElementById('chatForm').addEventListener('submit',event => {
-        event.preventDefault(); const input = document.getElementById('chatInput'), text = input.value.trim();
-        if (!text) return;
-        addChatMessage(text,'You',true); input.value = '';
-      });
-      document.querySelectorAll('.reaction').forEach(button => button.addEventListener('click',() => addChatMessage(button.dataset.reaction,'You',true)));
-      const peerMessages = ['That color combo is so good! 🎨','You are on a roll, squad! 🔥','Love where this is going 🧠','Tiny steps, big ideas! ⭐','This is going on the wall of fame 🙌'];
-      setInterval(() => {
-        if (!drawer.classList.contains('open')) return;
-        const names = ['Maya L.','Devon V.','Chloe B.'];
-        addChatMessage(peerMessages[Math.floor(Math.random()*peerMessages.length)],names[Math.floor(Math.random()*names.length)],false);
-      },18000);
-
-      function addPeerCursors() {
-        const holder = document.getElementById('peerCursors');
-        [['Maya L.','#ed6b72','⌁'],['Devon V.','#695bd2','↗'],['Chloe B.','#35a77d','✦']].forEach(([name,tint,icon],i) => {
-          const cursor = document.createElement('div'); cursor.className = 'cursor-bubble'; cursor.innerHTML = `<i style="color:${tint}">${icon}</i><span>${name}</span>`; holder.append(cursor);
-          const move = () => { cursor.style.left = `${12 + Math.random()*76}%`; cursor.style.top = `${10 + Math.random()*75}%`; };
-          cursor.style.left = `${18 + i*29}%`; cursor.style.top = `${22 + i*17}%`; setInterval(move,2600 + i*900);
-        });
-      }
-
-      async function exportBoard() {
-        const rect = stage.getBoundingClientRect(), scale = 2, out = document.createElement('canvas');
-        out.width = Math.round(rect.width*scale); out.height = Math.round(rect.height*scale);
-        const outCtx = out.getContext('2d');
-        outCtx.scale(scale,scale);
-        const style = getComputedStyle(stage), bg = style.backgroundColor;
-        outCtx.fillStyle = bg; outCtx.fillRect(0,0,rect.width,rect.height);
-        const bgImage = style.backgroundImage;
-        if (bgImage && bgImage !== 'none') {
-          const match = bgImage.match(/rgba?\([^)]+\)/);
-          if (match) {
-            outCtx.strokeStyle = match[0]; outCtx.fillStyle = match[0];
-            if (bgImage.includes('radial-gradient')) {
-              const spacing = parseFloat(style.backgroundSize) || 20;
-              for (let x=0;x<rect.width;x+=spacing) for(let y=0;y<rect.height;y+=spacing){outCtx.beginPath();outCtx.arc(x,y,1.25,0,Math.PI*2);outCtx.fill();}
-            } else {
-              const isGrid = bgImage.includes('90deg'), step = isGrid ? 24 : 28;
-              for(let y=0;y<rect.height;y+=step){outCtx.beginPath();outCtx.moveTo(0,y);outCtx.lineTo(rect.width,y);outCtx.stroke();}
-              if(isGrid) for(let x=0;x<rect.width;x+=step){outCtx.beginPath();outCtx.moveTo(x,0);outCtx.lineTo(x,rect.height);outCtx.stroke();}
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandCharcoal: '#2D3436',
+                        brandCoral: '#FF7675',
+                        brandIndigo: '#6C5CE7',
+                        brandYellow: '#FFD93D',
+                        brandMint: '#55E6C1',
+                        brandSky: '#74B9FF',
+                        paperBg: '#FDFBF7'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        patrick: ['Patrick Hand', 'cursive'],
+                        kalam: ['Kalam', 'cursive']
+                    }
+                }
             }
-          }
+        };
+    </script>
+
+    <style>
+        /* Notebook Background Textures */
+        .grid-notebook {
+            background-color: #FAF8F5;
+            background-image: 
+                radial-gradient(#CBD5E1 1.5px, transparent 1.5px),
+                linear-gradient(to right, rgba(255, 118, 117, 0.28) 2px, transparent 2px);
+            background-size: 24px 24px, 100% 100%;
+            background-position: 0 0, 56px 0;
         }
-        outCtx.drawImage(canvas,0,0,canvas.width,canvas.height,0,0,rect.width,rect.height);
-        for (const el of objectsLayer.querySelectorAll('.board-object')) {
-          const x = parseFloat(el.style.left)||0, y = parseFloat(el.style.top)||0;
-          if (el.dataset.kind === 'note') {
-            const w=el.offsetWidth,h=el.offsetHeight, noteBg=getComputedStyle(el).backgroundColor;
-            outCtx.save(); outCtx.fillStyle=noteBg; outCtx.shadowColor='rgba(33,40,42,.18)'; outCtx.shadowBlur=7; outCtx.shadowOffsetX=3; outCtx.shadowOffsetY=4; outCtx.fillRect(x,y,w,h); outCtx.restore();
-            outCtx.fillStyle='#3c4647'; outCtx.font='16px Kalam, cursive'; outCtx.textBaseline='top';
-            const text=el.querySelector('textarea').value||el.querySelector('textarea').placeholder; const words=text.split(/\s+/); let line='',ty=y+22;
-            for(const word of words){const test=line?`${line} ${word}`:word;if(outCtx.measureText(test).width>w-22&&line){outCtx.fillText(line,x+11,ty);line=word;ty+=21;}else line=test;} if(line)outCtx.fillText(line,x+11,ty);
-          } else {
-            outCtx.font='42px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; outCtx.textBaseline='top'; outCtx.fillText(el.textContent,x,y);
-          }
+
+        .lined-notebook {
+            background-color: #FFFDF9;
+            background-image: 
+                linear-gradient(#E2E8F0 1.5px, transparent 1.5px),
+                linear-gradient(to right, rgba(255, 118, 117, 0.3) 2px, transparent 2px);
+            background-size: 100% 32px, 100% 100%;
+            background-position: 0 0, 56px 0;
         }
-        out.toBlob(blob => {
-          if (!blob) { showToast('Export failed — please try again.'); return; }
-          const url=URL.createObjectURL(blob), link=document.createElement('a'); link.href=url; link.download='doodlesquad-board.png'; link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); showToast('Board downloaded as a PNG! 📸');
-        },'image/png');
-      }
-      document.getElementById('exportBtn').addEventListener('click',exportBoard);
-      const observer = new ResizeObserver(resizeCanvas); observer.observe(stage); window.addEventListener('resize',resizeCanvas);
-      resizeCanvas(); addPeerCursors();
-    })();
-  </script>
+
+        .dot-notebook {
+            background-color: #FAF8F5;
+            background-image: radial-gradient(#94A3B8 1.5px, transparent 1.5px);
+            background-size: 22px 22px;
+        }
+
+        .blackboard-notebook {
+            background-color: #1E272C;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+        }
+
+        /* Sketchy Borders & Buttons */
+        .sketch-border {
+            border: 3px solid #2D3436;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            box-shadow: 4px 5px 0px #2D3436;
+        }
+
+        .sketch-border-sm {
+            border: 2.5px solid #2D3436;
+            border-radius: 14px 255px 16px 225px/225px 16px 255px 14px;
+            box-shadow: 3px 3px 0px #2D3436;
+        }
+
+        .sketch-button {
+            border: 2.5px solid #2D3436;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            box-shadow: 3px 3px 0px #2D3436;
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+            user-select: none;
+        }
+        .sketch-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #2D3436;
+        }
+        .sketch-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #2D3436;
+        }
+
+        /* Neon Scanning Laser Animation */
+        @keyframes scanDown {
+            0% { top: 0%; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .laser-scanning {
+            animation: scanDown 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* Pulsing Glow */
+        @keyframes subtleGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(108, 92, 231, 0.5), 3px 3px 0px #2D3436; }
+            50% { box-shadow: 0 0 20px rgba(255, 217, 61, 0.8), 4px 4px 0px #2D3436; }
+        }
+        .glow-btn {
+            animation: subtleGlow 2.5s infinite;
+        }
+
+        /* Draggable elements */
+        .sticky-note {
+            position: absolute;
+            user-select: none;
+            touch-action: none;
+            cursor: grab;
+            border: 2.5px solid #2D3436;
+            box-shadow: 3px 4px 10px rgba(0,0,0,0.12), 3px 3px 0px #2D3436;
+            z-index: 25;
+        }
+        .sticky-note:active {
+            cursor: grabbing;
+        }
+
+        .canvas-sticker {
+            position: absolute;
+            user-select: none;
+            touch-action: none;
+            cursor: grab;
+            z-index: 24;
+            transition: transform 0.1s ease;
+        }
+        .canvas-sticker:active {
+            cursor: grabbing;
+            transform: scale(1.25) rotate(6deg);
+        }
+
+        /* Simulated Peer Cursors */
+        .peer-cursor {
+            position: absolute;
+            pointer-events: none;
+            z-index: 35;
+            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
+        }
+    </style>
+</head>
+<body class="grid-notebook font-fredoka text-brandCharcoal antialiased min-h-screen flex flex-col selection:bg-brandYellow selection:text-black">
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed top-20 right-6 z-50 transform translate-y-[-140%] opacity-0 transition-all duration-300 pointer-events-none sketch-border-sm bg-brandYellow px-5 py-3 font-patrick text-xl font-bold text-brandCharcoal flex items-center gap-3 shadow-xl">
+        <span id="toastIcon">✨</span>
+        <span id="toastMessage">Ready!</span>
+    </div>
+
+    <!-- TOP NAVIGATION NAVBAR -->
+    <nav class="sticky top-0 z-40 bg-paperBg/95 backdrop-blur-md border-b-4 border-brandCharcoal px-3 sm:px-6 py-2.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            
+            <!-- Branding -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-11 h-11 bg-brandYellow rounded-full sketch-border-sm flex items-center justify-center p-1 group-hover:rotate-12 transition-transform">
+                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+                        <polygon points="20,80 30,90 85,35 75,25" fill="#FF7675" stroke="#2D3436" stroke-width="4"/>
+                        <polygon points="10,90 20,80 30,90" fill="#FFEAA7" stroke="#2D3436" stroke-width="4"/>
+                        <polygon points="5,95 10,90 15,95" fill="#2D3436"/>
+                        <rect x="70" y="15" width="15" height="15" rx="3" fill="#A29BFE" stroke="#2D3436" stroke-width="4" transform="rotate(45 77 22)"/>
+                        <circle cx="50" cy="50" r="4" fill="#2D3436"/>
+                        <circle cx="62" cy="38" r="4" fill="#2D3436"/>
+                        <path d="M 52 56 Q 58 62 64 50" fill="none" stroke="#2D3436" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-2xl tracking-wide text-brandCharcoal leading-none">Doodle<span class="text-brandIndigo">Squad</span></span>
+                    </div>
+                    <span class="font-patrick text-xs text-gray-600 font-bold -mt-0.5 block">Where Brainstorms Hatch! 🐣</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <div class="hidden md:flex items-center gap-6 font-semibold text-base font-patrick">
+                <a href="#sandbox" class="hover:text-brandIndigo hover:underline decoration-wavy decoration-brandYellow underline-offset-4 transition-all">Canvas Sandbox</a>
+                <a href="#superpowers" class="hover:text-brandIndigo hover:underline decoration-wavy decoration-brandCoral underline-offset-4 transition-all">Superpowers</a>
+                <a href="#squads" class="hover:text-brandIndigo hover:underline decoration-wavy decoration-brandMint underline-offset-4 transition-all">Study Squads</a>
+                <a href="#testimonials" class="hover:text-brandIndigo hover:underline decoration-wavy decoration-brandSky underline-offset-4 transition-all">Wall of Fame</a>
+            </div>
+
+            <!-- Squad Room & Primary Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Room Badge -->
+                <div class="flex items-center gap-2 bg-white px-2.5 sm:px-3 py-1 rounded-xl sketch-border-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="roomCodeDisplay" class="font-mono font-bold text-xs sm:text-sm text-brandCharcoal tracking-wider">SQUAD-8492</span>
+                    <button onclick="copyInviteLink()" class="text-gray-500 hover:text-brandIndigo transition-colors ml-1 p-0.5" title="Copy Invite Link">
+                        <i class="fa-solid fa-copy text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Primary AI Neatify Trigger in Nav -->
+                <button id="navNeatifyBtn" class="glow-btn sketch-button bg-brandIndigo text-white font-bold px-3.5 sm:px-4 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 hover:bg-indigo-700 cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brandYellow"></i>
+                    <span>✨ AI Neatify</span>
+                </button>
+
+                <!-- Sandbox Scroll Link -->
+                <a href="#sandbox" class="sketch-button bg-brandYellow font-bold px-3 py-1.5 text-xs sm:text-sm hidden sm:inline-flex items-center gap-1.5 hover:bg-yellow-300">
+                    <i class="fa-solid fa-pencil"></i> Try Sandbox
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SECTION: WHITEBOARD CANVAS STUDIO -->
+    <section id="sandbox" class="py-4 max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 w-full flex-1 flex flex-col">
+        
+        <!-- CANVAS TOP CONTROL BAR -->
+        <div class="bg-white/95 p-3 sketch-border-sm mb-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            
+            <!-- Left: Active Squad Members & Chat Trigger -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <span class="font-patrick font-bold text-xs text-gray-500 uppercase">Live Squad:</span>
+                <div class="flex items-center -space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-brandMint sketch-border-sm flex items-center justify-center text-xs font-bold" title="Devon V. (You)">👦🏽</div>
+                    <div class="w-8 h-8 rounded-full bg-brandYellow sketch-border-sm flex items-center justify-center text-xs font-bold" title="Maya L.">👧🏻</div>
+                    <div class="w-8 h-8 rounded-full bg-brandSky sketch-border-sm flex items-center justify-center text-xs font-bold" title="Chloe B.">👩🏼</div>
+                    <div class="w-8 h-8 rounded-full bg-brandCoral sketch-border-sm flex items-center justify-center text-xs font-bold" title="Leo (Cat Mascot)">🐱</div>
+                </div>
+                <button onclick="toggleChatDrawer()" class="sketch-button bg-paperBg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5 hover:bg-amber-100">
+                    <i class="fa-solid fa-comments text-brandIndigo"></i> Chat (3)
+                </button>
+            </div>
+
+            <!-- Right: Action Buttons (Neatify, Undo, Redo, Clear, PNG Export) -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Highlighted Action Button directly on canvas bar -->
+                <button id="canvasNeatifyBtn" class="sketch-button bg-brandIndigo text-white font-bold px-3 py-1 text-xs flex items-center gap-1.5 hover:bg-indigo-700 cursor-pointer shadow-md">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brandYellow"></i>
+                    <span>✨ Neatify Doodle</span>
+                </button>
+
+                <button id="undoBtn" class="sketch-button bg-white px-2.5 py-1 text-xs font-bold flex items-center gap-1 hover:bg-gray-100" title="Undo (Ctrl+Z)">
+                    <i class="fa-solid fa-rotate-left"></i> <span class="hidden sm:inline">Undo</span>
+                </button>
+                <button id="redoBtn" class="sketch-button bg-white px-2.5 py-1 text-xs font-bold flex items-center gap-1 hover:bg-gray-100" title="Redo (Ctrl+Y)">
+                    <i class="fa-solid fa-rotate-right"></i> <span class="hidden sm:inline">Redo</span>
+                </button>
+                <button id="clearBoardBtn" class="sketch-button bg-brandCoral text-white px-2.5 py-1 text-xs font-bold flex items-center gap-1 hover:bg-rose-500" title="Clear Canvas">
+                    <i class="fa-solid fa-trash-can"></i> Clear
+                </button>
+                <button onclick="exportBoardAsPNG()" class="sketch-button bg-brandMint text-brandCharcoal px-3 py-1 text-xs font-bold flex items-center gap-1.5 hover:bg-emerald-300">
+                    <i class="fa-solid fa-download"></i> <span>Export PNG</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN WORKSPACE: TOOLBAR + CANVAS CONTAINER -->
+        <div class="sketch-border bg-white p-2 sm:p-3 relative shadow-xl min-h-[580px] sm:min-h-[640px] flex-1 flex flex-col lg:flex-row gap-3">
+            
+            <!-- LEFT TOOLBAR -->
+            <aside class="w-full lg:w-60 flex flex-col gap-3 bg-paperBg p-3 sketch-border-sm shrink-0 overflow-y-auto max-h-[85vh]">
+                
+                <!-- Drawing Tools -->
+                <div>
+                    <h4 class="font-bold text-xs uppercase tracking-wider mb-2 font-fredoka flex items-center gap-1.5 text-gray-700">
+                        <i class="fa-solid fa-toolbox text-brandIndigo"></i> Tools
+                    </h4>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button id="toolPen" class="tool-btn sketch-button bg-brandYellow text-brandCharcoal font-bold p-1.5 text-xs flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-pen-nib"></i> Pen
+                        </button>
+                        <button id="toolHighlighter" class="tool-btn sketch-button bg-white text-brandCharcoal font-bold p-1.5 text-xs flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-highlighter text-yellow-500"></i> Glow
+                        </button>
+                        <button id="toolEraser" class="tool-btn sketch-button bg-white text-brandCharcoal font-bold p-1.5 text-xs flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-eraser"></i> Eraser
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ink Color Swatches -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <h4 class="font-bold text-xs uppercase tracking-wider font-fredoka text-gray-700 flex items-center gap-1">
+                            <i class="fa-solid fa-palette text-brandCoral"></i> Color Palette
+                        </h4>
+                        <span id="colorNameLabel" class="font-patrick text-xs font-bold text-gray-500">Charcoal</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button class="color-btn w-6 h-6 rounded-full border-2 border-black bg-[#2D3436] ring-2 ring-offset-1 ring-black" data-color="#2D3436" data-name="Charcoal"></button>
+                        <button class="color-btn w-6 h-6 rounded-full border-2 border-black bg-[#FF7675]" data-color="#FF7675" data-name="Coral"></button>
+                        <button class="color-btn w-6 h-6 rounded-full border-2 border-black bg-[#6C5CE7]" data-color="#6C5CE7" data-name="Indigo"></button>
+                        <button class="color-btn w-6 h-6 rounded-full border-2 border-black bg-[#FFD93D]" data-color="#FFD93D" data-name="Yellow"></button>
+                        <button class="color-btn w-6 h-6 rounded-full border-2 border-black bg-[#55E6C1]" data-color="#55E6C1" data-name="Mint"></button>
+                        <button class="color-btn w-6 h-6 rounded-full border-2 border-black bg-[#74B9FF]" data-color="#74B9FF" data-name="Sky Blue"></button>
+                    </div>
+                </div>
+
+                <!-- Brush Thickness Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-xs uppercase tracking-wider font-fredoka text-gray-700">Brush Thickness</h4>
+                        <span id="brushSizeDisplay" class="font-patrick text-sm font-bold text-brandIndigo">4px</span>
+                    </div>
+                    <input type="range" id="brushSizeSlider" min="2" max="30" value="4" class="w-full accent-brandIndigo cursor-pointer">
+                </div>
+
+                <!-- Paper Pattern Styles -->
+                <div>
+                    <h4 class="font-bold text-xs uppercase tracking-wider mb-1.5 font-fredoka text-gray-700 flex items-center gap-1">
+                        <i class="fa-solid fa-scroll text-amber-700"></i> Paper Theme
+                    </h4>
+                    <div class="grid grid-cols-4 gap-1">
+                        <button onclick="setPaperTheme('grid')" class="sketch-button bg-white text-[11px] font-bold py-1 px-0.5 hover:bg-gray-100">Grid</button>
+                        <button onclick="setPaperTheme('lined')" class="sketch-button bg-white text-[11px] font-bold py-1 px-0.5 hover:bg-gray-100">Lines</button>
+                        <button onclick="setPaperTheme('dot')" class="sketch-button bg-white text-[11px] font-bold py-1 px-0.5 hover:bg-gray-100">Dots</button>
+                        <button onclick="setPaperTheme('blackboard')" class="sketch-button bg-gray-800 text-white text-[11px] font-bold py-1 px-0.5 hover:bg-gray-700">Dark</button>
+                    </div>
+                </div>
+
+                <!-- Drop Sticky Note Button -->
+                <div class="pt-2 border-t-2 border-dashed border-gray-300">
+                    <button id="addStickyBtn" class="w-full sketch-button bg-brandMint text-brandCharcoal font-bold py-1.5 px-2 text-xs flex items-center justify-center gap-1.5 hover:bg-emerald-300">
+                        <i class="fa-solid fa-note-sticky"></i> + Drop Sticky Note
+                    </button>
+                </div>
+
+                <!-- Mascot Stickers Palette -->
+                <div class="pt-2 border-t-2 border-dashed border-gray-300">
+                    <span class="text-[11px] font-bold text-gray-700 block mb-1">Drop Mascot Stickers:</span>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button class="sticker-btn sketch-border-sm bg-yellow-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="🦉" title="Brainy Owl">🦉</button>
+                        <button class="sticker-btn sketch-border-sm bg-blue-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="🚀" title="Rocket Bot">🚀</button>
+                        <button class="sticker-btn sketch-border-sm bg-purple-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="🐱" title="Doodle Cat">🐱</button>
+                        <button class="sticker-btn sketch-border-sm bg-green-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="✏️" title="Pencil Pal">✏️</button>
+                        <button class="sticker-btn sketch-border-sm bg-rose-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="💡" title="Idea Spark">💡</button>
+                        <button class="sticker-btn sketch-border-sm bg-amber-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="⭐" title="Gold Star">⭐</button>
+                        <button class="sticker-btn sketch-border-sm bg-teal-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="🧪" title="Science Lab">🧪</button>
+                        <button class="sticker-btn sketch-border-sm bg-pink-100 p-1 text-xl hover:scale-115 transition-transform" data-emoji="📚" title="Book Worm">📚</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CANVAS / BOARD WORKSPACE -->
+            <div id="canvasContainer" class="flex-1 relative bg-[#FAF8F5] sketch-border-sm min-h-[480px] lg:min-h-[580px] overflow-hidden grid-notebook select-none">
+                
+                <!-- HTML5 Drawing Canvas -->
+                <canvas id="doodleCanvas" class="absolute inset-0 w-full h-full z-10 cursor-crosshair touch-none"></canvas>
+
+                <!-- Neon Laser Scanning Beam Overlay (1-sec sweep) -->
+                <div id="laserScanBeam" class="absolute left-0 right-0 h-4 bg-gradient-to-r from-transparent via-[#55E6C1] to-transparent shadow-[0_0_25px_#55E6C1] pointer-events-none z-30 hidden" style="top: 0%;"></div>
+
+                <!-- Simulated Peer Cursors -->
+                <div id="peerCursorMaya" class="peer-cursor flex items-center gap-1.5" style="transform: translate3d(240px, 140px, 0);">
+                    <div class="w-3 h-3 border-2 border-black bg-brandYellow rotate-45 transform"></div>
+                    <span class="bg-brandYellow text-brandCharcoal font-bold text-[10px] px-2 py-0.5 rounded-full sketch-border-sm">Maya L. ✏️</span>
+                </div>
+                <div id="peerCursorChloe" class="peer-cursor flex items-center gap-1.5" style="transform: translate3d(420px, 280px, 0);">
+                    <div class="w-3 h-3 border-2 border-black bg-brandSky rotate-45 transform"></div>
+                    <span class="bg-brandSky text-brandCharcoal font-bold text-[10px] px-2 py-0.5 rounded-full sketch-border-sm">Chloe B. 💡</span>
+                </div>
+
+                <!-- Initial Pre-loaded Sticky Note -->
+                <div class="sticky-note absolute bg-amber-100 p-3 w-52 rotate-1 font-patrick rounded-sm" style="top: 24px; left: 24px;">
+                    <div class="flex justify-between items-center border-b border-amber-300 pb-1 mb-1.5">
+                        <span class="font-bold text-xs text-amber-900 flex items-center gap-1">📌 Study Goal</span>
+                        <button class="delete-note-btn text-gray-400 hover:text-red-500 font-bold text-xs p-0.5">✕</button>
+                    </div>
+                    <textarea class="w-full bg-transparent resize-none outline-none font-patrick text-base text-gray-800 leading-tight h-16" placeholder="Type here...">Draw anything with jitter on the canvas, then hit ✨ AI Neatify!</textarea>
+                </div>
+
+                <!-- Initial Mascot Stickers -->
+                <div class="canvas-sticker text-5xl" style="top: 110px; left: 320px;" title="Drag me!">🦉</div>
+                <div class="canvas-sticker text-5xl" style="top: 240px; left: 450px;" title="Drag me!">🚀</div>
+
+                <!-- Canvas Bottom Watermark -->
+                <div class="absolute bottom-2 right-3 pointer-events-none opacity-40 font-patrick text-xs sm:text-sm font-bold text-gray-600 z-0">
+                    DoodleSquad Room: <span class="font-mono font-bold text-brandIndigo">SQUAD-8492</span> • Vector Spline Engine
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SQUAD CHAT OVERLAY DRAWER -->
+    <div id="chatDrawer" class="fixed bottom-4 right-4 w-76 sm:w-84 bg-white sketch-border z-50 flex flex-col shadow-2xl transition-all duration-300">
+        <!-- Header -->
+        <div class="bg-brandYellow p-2.5 border-b-2 border-brandCharcoal flex items-center justify-between cursor-pointer" onclick="toggleChatDrawer()">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="font-bold text-sm text-brandCharcoal">Squad Live Chat (4)</span>
+            </div>
+            <button class="text-brandCharcoal hover:text-black font-bold text-xs">
+                <i class="fa-solid fa-chevron-down" id="chatChevronIcon"></i>
+            </button>
+        </div>
+
+        <!-- Chat Feed -->
+        <div id="chatMessagesContainer" class="p-3 max-h-52 overflow-y-auto space-y-2 bg-paperBg text-xs font-patrick">
+            <div class="flex items-start gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-brandYellow sketch-border-sm flex items-center justify-center text-[10px] shrink-0">👧🏻</span>
+                <div class="bg-white p-2 rounded-lg sketch-border-sm max-w-[85%]">
+                    <span class="font-bold text-gray-900 text-[11px] block">Maya L.</span>
+                    <p class="text-gray-800 text-sm">Welcome to the study room! Draw whatever you want and test AI Neatify ✨</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-brandCoral sketch-border-sm flex items-center justify-center text-[10px] shrink-0">🐱</span>
+                <div class="bg-rose-50 p-2 rounded-lg sketch-border-sm max-w-[85%]">
+                    <span class="font-bold text-rose-800 text-[11px] block">Leo (Mascot)</span>
+                    <p class="text-gray-800 text-sm">The RDP + Chaikin spline smoothing turns messy lines into pure vector art! 🚀</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Cheer Buttons -->
+        <div class="px-2 py-1 bg-gray-100 border-t border-gray-200 flex items-center justify-between text-base">
+            <span class="text-[10px] font-bold text-gray-500 uppercase">Cheer:</span>
+            <div class="flex gap-1.5">
+                <button onclick="sendQuickCheer('🔥')" class="hover:scale-125 transition-transform">🔥</button>
+                <button onclick="sendQuickCheer('⭐')" class="hover:scale-125 transition-transform">⭐</button>
+                <button onclick="sendQuickCheer('🧠')" class="hover:scale-125 transition-transform">🧠</button>
+                <button onclick="sendQuickCheer('🙌')" class="hover:scale-125 transition-transform">🙌</button>
+            </div>
+        </div>
+
+        <!-- Chat Input Form -->
+        <form id="chatForm" onsubmit="handleSendChat(event)" class="p-2 bg-white border-t-2 border-brandCharcoal flex gap-1.5">
+            <input type="text" id="chatInput" placeholder="Message study squad..." class="flex-1 bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1 text-xs outline-none focus:border-brandIndigo">
+            <button type="submit" class="sketch-button bg-brandIndigo text-white font-bold px-3 py-1 text-xs cursor-pointer">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- SECTION: SUPERPOWERS -->
+    <section id="superpowers" class="py-16 bg-white/70 border-y-4 border-brandCharcoal relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="sketch-border-sm bg-brandCoral text-white font-patrick text-xl font-bold px-4 py-1 inline-block -rotate-1 mb-2">
+                    Superpowers ⚡
+                </span>
+                <h2 class="text-4xl sm:text-5xl font-black text-brandCharcoal">Everything Your Squad Needs</h2>
+                <p class="font-patrick text-2xl text-gray-600 mt-2">Ditch rigid text docs. Start thinking in color & fluid sketches!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="sketch-border bg-brandYellow/30 p-6 flex flex-col justify-between hover:-translate-y-2 transition-transform">
+                    <div>
+                        <div class="w-14 h-14 sketch-border bg-brandYellow flex items-center justify-center text-3xl mb-4">✏️</div>
+                        <h3 class="text-2xl font-bold mb-2">Live Canvas & Doodles</h3>
+                        <p class="font-patrick text-xl text-gray-700">Skitch, diagram, color-code, or circle key exam topics in real time together with zero lag.</p>
+                    </div>
+                    <span class="mt-6 pt-3 border-t-2 border-dashed border-gray-400 font-patrick font-bold text-brandIndigo text-lg">60FPS Smooth 🚀</span>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="sketch-border bg-brandMint/30 p-6 flex flex-col justify-between hover:-translate-y-2 transition-transform">
+                    <div>
+                        <div class="w-14 h-14 sketch-border bg-brandMint flex items-center justify-center text-3xl mb-4">📝</div>
+                        <h3 class="text-2xl font-bold mb-2">Sticky Note Clusters</h3>
+                        <p class="font-patrick text-xl text-gray-700">Organize sprint tasks, paste formula reminders, and drag pastel sticky notes anywhere on the board.</p>
+                    </div>
+                    <span class="mt-6 pt-3 border-t-2 border-dashed border-gray-400 font-patrick font-bold text-brandIndigo text-lg">Instant Sync ✨</span>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="sketch-border bg-brandSky/30 p-6 flex flex-col justify-between hover:-translate-y-2 transition-transform">
+                    <div>
+                        <div class="w-14 h-14 sketch-border bg-brandSky flex items-center justify-center text-3xl mb-4">🎙️</div>
+                        <h3 class="text-2xl font-bold mb-2">Voice & Study Huddles</h3>
+                        <p class="font-patrick text-xl text-gray-700">Jump into low-latency study huddles with peer cursor tracking and live squad cheer reactions.</p>
+                    </div>
+                    <span class="mt-6 pt-3 border-t-2 border-dashed border-gray-400 font-patrick font-bold text-brandIndigo text-lg">Live Presence 🎧</span>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="sketch-border bg-brandCoral/30 p-6 flex flex-col justify-between hover:-translate-y-2 transition-transform">
+                    <div>
+                        <div class="w-14 h-14 sketch-border bg-brandCoral flex items-center justify-center text-3xl mb-4">🏆</div>
+                        <h3 class="text-2xl font-bold mb-2">Sticker Badges & XP</h3>
+                        <p class="font-patrick text-xl text-gray-700">Earn custom mascot stamps and level up your study streak as your squad completes daily goals.</p>
+                    </div>
+                    <span class="mt-6 pt-3 border-t-2 border-dashed border-gray-400 font-patrick font-bold text-brandIndigo text-lg">Gamified Goals 🥇</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: MASCOT ROSTER -->
+    <section id="squads" class="py-16 bg-brandYellow/15 border-b-4 border-brandCharcoal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="sketch-border-sm bg-brandYellow font-patrick text-xl font-bold px-4 py-1 inline-block rotate-1 mb-2">
+                    Meet The Squad Mascots 🐾
+                </span>
+                <h2 class="text-4xl font-black text-brandCharcoal">Choose Your Study Companion</h2>
+                <p class="font-patrick text-2xl text-gray-600">Every mascot brings a special boost to your study flow!</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Mascot 1 -->
+                <div class="sketch-border bg-white p-6 text-center hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 mx-auto mb-3 bg-brandYellow rounded-full sketch-border flex items-center justify-center text-4xl">🦉</div>
+                    <h3 class="text-xl font-bold">Brainy Owl</h3>
+                    <span class="inline-block bg-yellow-100 text-yellow-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-yellow-300">Master Summarizer</span>
+                    <p class="font-patrick text-lg text-gray-600">Extracts key points from dense chapters and keeps your notes concise.</p>
+                </div>
+                <!-- Mascot 2 -->
+                <div class="sketch-border bg-white p-6 text-center hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 mx-auto mb-3 bg-brandSky rounded-full sketch-border flex items-center justify-center text-4xl">🚀</div>
+                    <h3 class="text-xl font-bold">Rocket Bot</h3>
+                    <span class="inline-block bg-sky-100 text-sky-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-sky-300">Sprint Timer</span>
+                    <p class="font-patrick text-lg text-gray-600">Keeps 25-minute Pomodoro study sprints disciplined with friendly reminders.</p>
+                </div>
+                <!-- Mascot 3 -->
+                <div class="sketch-border bg-white p-6 text-center hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 mx-auto mb-3 bg-brandCoral rounded-full sketch-border flex items-center justify-center text-4xl">✏️</div>
+                    <h3 class="text-xl font-bold">Pencil Pal</h3>
+                    <span class="inline-block bg-rose-100 text-rose-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-rose-300">Diagram Wizard</span>
+                    <p class="font-patrick text-lg text-gray-600">Assists with clean arrow connectors, flowchart layouts, and mind maps.</p>
+                </div>
+                <!-- Mascot 4 -->
+                <div class="sketch-border bg-white p-6 text-center hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 mx-auto mb-3 bg-brandMint rounded-full sketch-border flex items-center justify-center text-4xl">🐱</div>
+                    <h3 class="text-xl font-bold">Doodle Cat</h3>
+                    <span class="inline-block bg-emerald-100 text-emerald-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-emerald-300">Vibe Booster</span>
+                    <p class="font-patrick text-lg text-gray-600">Drops high-energy cheers and memes to conquer late-night study fatigue.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: WALL OF FAME -->
+    <section id="testimonials" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="sketch-border-sm bg-brandMint font-patrick text-xl font-bold px-4 py-1 inline-block -rotate-2 mb-2">
+                💌 Wall of Student Love
+            </span>
+            <h2 class="text-4xl font-black text-brandCharcoal">Loved by Study Squads Worldwide</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-4 sketch-border -rotate-1 hover:rotate-0 transition-transform">
+                <div class="bg-amber-100 p-4 sketch-border-sm mb-3 min-h-[140px] font-patrick text-xl text-gray-800">
+                    "Our physics exam squad used to fight over Google Docs. Now we just sketch force diagrams and neatify them together in seconds!"
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full sketch-border bg-brandYellow flex items-center justify-center text-xl">👧🏻</div>
+                    <div>
+                        <h4 class="font-bold text-sm">Maya Lin</h4>
+                        <p class="font-patrick text-xs text-gray-600">Physics Major • Stanford Squad</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 sketch-border rotate-1 hover:rotate-0 transition-transform">
+                <div class="bg-sky-100 p-4 sketch-border-sm mb-3 min-h-[140px] font-patrick text-xl text-gray-800">
+                    "The zero-lag drawing and instant AI Neatify spline smoothing makes drawing flowcharts feel completely natural. Huge win for our team!"
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full sketch-border bg-brandSky flex items-center justify-center text-xl">👦🏽</div>
+                    <div>
+                        <h4 class="font-bold text-sm">Devon Vance</h4>
+                        <p class="font-patrick text-xs text-gray-600">Computer Science • MIT Hackathon</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 sketch-border -rotate-2 hover:rotate-0 transition-transform">
+                <div class="bg-rose-100 p-4 sketch-border-sm mb-3 min-h-[140px] font-patrick text-xl text-gray-800">
+                    "No random formula bugs—it keeps exactly what I handwrote and turns it into clean, crisp studio lines. The export PNG is super clean."
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full sketch-border bg-brandCoral flex items-center justify-center text-xl">👩🏼</div>
+                    <div>
+                        <h4 class="font-bold text-sm">Chloe Bennett</h4>
+                        <p class="font-patrick text-xs text-gray-600">Graphic Design • RISD Cohort</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-brandCharcoal text-white border-t-4 border-brandCharcoal mt-auto py-10 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 font-patrick text-lg">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">✏️</span>
+                <span class="font-bold text-xl font-fredoka text-brandYellow">DoodleSquad</span>
+                <span class="text-gray-400 text-sm ml-2">© 2026 Crafted with 💛 for student hackathons everywhere.</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-gray-300">
+                <a href="#sandbox" class="hover:text-brandYellow transition-colors">Canvas Sandbox</a>
+                <span>•</span>
+                <a href="#superpowers" class="hover:text-brandYellow transition-colors">Features</a>
+                <span>•</span>
+                <a href="#squads" class="hover:text-brandYellow transition-colors">Mascots</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT: BULLETPROOF STROKE RECORDER & 100% RELIABLE AI NEATIFY -->
+    <script>
+        // --- 1. GLOBAL STATE & CONFIGURATION ---
+        const appState = {
+            roomCode: 'SQUAD-8492',
+            tool: 'pen', // 'pen', 'highlighter', 'eraser'
+            color: '#2D3436',
+            colorName: 'Charcoal',
+            brushSize: 4,
+            isDrawing: false,
+            // CRITICAL: Master strokes array that stores all drawn items
+            strokes: [], // [{ points: [{x, y}, ...], color: string, size: number, tool: string }]
+            redoStack: [],
+            currentStroke: null,
+            isChatOpen: true,
+            isNeatifying: false
+        };
+
+        // --- 2. MATHEMATICAL BEUTIFICATION ENGINES (RDP + CHAIKIN) ---
+        // A. Ramer-Douglas-Peucker (RDP) algorithm with epsilon = 2.5
+        function rdpSimplify(points, epsilon = 2.5) {
+            if (!points || points.length <= 2) return points;
+            let dmax = 0;
+            let index = 0;
+            const end = points.length - 1;
+
+            const p1 = points[0];
+            const p2 = points[end];
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const lenSq = dx * dx + dy * dy;
+
+            for (let i = 1; i < end; i++) {
+                const p = points[i];
+                let d = 0;
+                if (lenSq === 0) {
+                    d = Math.hypot(p.x - p1.x, p.y - p1.y);
+                } else {
+                    const t = Math.max(0, Math.min(1, ((p.x - p1.x) * dx + (p.y - p1.y) * dy) / lenSq));
+                    const projX = p1.x + t * dx;
+                    const projY = p1.y + t * dy;
+                    d = Math.hypot(p.x - projX, p.y - projY);
+                }
+                if (d > dmax) {
+                    index = i;
+                    dmax = d;
+                }
+            }
+
+            if (dmax > epsilon) {
+                const rec1 = rdpSimplify(points.slice(0, index + 1), epsilon);
+                const rec2 = rdpSimplify(points.slice(index), epsilon);
+                return rec1.slice(0, -1).concat(rec2);
+            }
+            return [p1, p2];
+        }
+
+        // B. Chaikin's Algorithm (2 passes for smooth corner rounding)
+        function chaikinSmooth(points, passes = 2) {
+            if (!points || points.length <= 2) return points;
+            let current = points;
+            for (let p = 0; p < passes; p++) {
+                const refined = [current[0]];
+                for (let i = 0; i < current.length - 1; i++) {
+                    const p0 = current[i];
+                    const p1 = current[i + 1];
+                    refined.push({
+                        x: 0.75 * p0.x + 0.25 * p1.x,
+                        y: 0.75 * p0.y + 0.25 * p1.y
+                    });
+                    refined.push({
+                        x: 0.25 * p0.x + 0.75 * p1.x,
+                        y: 0.25 * p0.y + 0.75 * p1.y
+                    });
+                }
+                refined.push(current[current.length - 1]);
+                current = refined;
+            }
+            return current;
+        }
+
+        // --- 3. TOAST NOTIFICATION UTILITY ---
+        function showToast(msg, icon = '✨') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            document.getElementById('toastIcon').innerText = icon;
+            toast.classList.remove('translate-y-[-140%]', 'opacity-0');
+            clearTimeout(window._toastTimeout);
+            window._toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-[-140%]', 'opacity-0');
+            }, 3000);
+        }
+
+        function copyInviteLink() {
+            const url = `https://doodlesquad.edu/room/${appState.roomCode}`;
+            const dummy = document.createElement('input');
+            dummy.value = url;
+            document.body.appendChild(dummy);
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast(`Room link copied! (${appState.roomCode})`, '📋');
+        }
+
+        // --- 4. CANVAS APPLICATION CORE ---
+        window.addEventListener('load', () => {
+            const canvas = document.getElementById('doodleCanvas');
+            const ctx = canvas.getContext('2d', { alpha: true });
+            const container = document.getElementById('canvasContainer');
+            const scanBeam = document.getElementById('laserScanBeam');
+
+            let dpr = window.devicePixelRatio || 1;
+            let canvasWidth = 0, canvasHeight = 0;
+
+            // Handle DPI and window resizing cleanly
+            function resizeCanvas() {
+                dpr = window.devicePixelRatio || 1;
+                canvasWidth = container.clientWidth;
+                canvasHeight = container.clientHeight;
+
+                canvas.width = Math.floor(canvasWidth * dpr);
+                canvas.height = Math.floor(canvasHeight * dpr);
+                canvas.style.width = canvasWidth + 'px';
+                canvas.style.height = canvasHeight + 'px';
+
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                redrawAll();
+            }
+
+            // Redraw complete stroke history using quadraticCurveTo
+            function redrawAll() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                for (let i = 0; i < appState.strokes.length; i++) {
+                    drawStroke(appState.strokes[i]);
+                }
+            }
+
+            // Draw a single stroke with studio calligraphy rendering
+            function drawStroke(stroke) {
+                const pts = stroke.points;
+                if (!pts || pts.length === 0) return;
+
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                if (stroke.tool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = stroke.size * 2.5;
+                } else if (stroke.tool === 'highlighter') {
+                    ctx.globalCompositeOperation = 'multiply';
+                    ctx.lineWidth = stroke.size * 2.6;
+                    ctx.strokeStyle = stroke.color + '66'; // Glowing translucent ink
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.lineWidth = stroke.size;
+                    ctx.strokeStyle = stroke.color;
+                }
+
+                if (pts.length === 1) {
+                    ctx.beginPath();
+                    ctx.arc(pts[0].x, pts[0].y, (ctx.lineWidth || 4) * 0.45, 0, Math.PI * 2);
+                    ctx.fillStyle = ctx.strokeStyle;
+                    ctx.fill();
+                    ctx.restore();
+                    return;
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+
+                if (pts.length === 2) {
+                    ctx.lineTo(pts[1].x, pts[1].y);
+                } else {
+                    // Quadratic Bezier interpolation across midpoints
+                    for (let i = 1; i < pts.length - 1; i++) {
+                        const midX = (pts[i].x + pts[i + 1].x) * 0.5;
+                        const midY = (pts[i].y + pts[i + 1].y) * 0.5;
+                        ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY);
+                    }
+                    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Accurate Coordinate Getter via getBoundingClientRect()
+            function getPoint(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+
+            // --- POINTER EVENTS (Unified Mouse & Touch Recorder) ---
+            canvas.addEventListener('pointerdown', (e) => {
+                if (appState.isNeatifying) return;
+                canvas.setPointerCapture(e.pointerId);
+                appState.isDrawing = true;
+
+                const pt = getPoint(e);
+                appState.currentStroke = {
+                    points: [pt],
+                    color: appState.color,
+                    size: appState.brushSize,
+                    tool: appState.tool
+                };
+
+                // Draw initial contact dot
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                if (appState.tool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = appState.brushSize * 2.5;
+                } else if (appState.tool === 'highlighter') {
+                    ctx.globalCompositeOperation = 'multiply';
+                    ctx.lineWidth = appState.brushSize * 2.6;
+                    ctx.strokeStyle = appState.color + '66';
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.lineWidth = appState.brushSize;
+                    ctx.strokeStyle = appState.color;
+                }
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, (ctx.lineWidth || 4) * 0.45, 0, Math.PI * 2);
+                ctx.fillStyle = ctx.strokeStyle;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!appState.isDrawing || !appState.currentStroke) return;
+                const pt = getPoint(e);
+                const pts = appState.currentStroke.points;
+                const lastPt = pts[pts.length - 1];
+
+                // Delta distance threshold: avoid duplicate stationary points
+                if (Math.hypot(pt.x - lastPt.x, pt.y - lastPt.y) >= 1.5) {
+                    pts.push(pt);
+
+                    // Immediate live ink rendering
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    if (appState.tool === 'eraser') {
+                        ctx.globalCompositeOperation = 'destination-out';
+                        ctx.lineWidth = appState.brushSize * 2.5;
+                    } else if (appState.tool === 'highlighter') {
+                        ctx.globalCompositeOperation = 'multiply';
+                        ctx.lineWidth = appState.brushSize * 2.6;
+                        ctx.strokeStyle = appState.color + '66';
+                    } else {
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.lineWidth = appState.brushSize;
+                        ctx.strokeStyle = appState.color;
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(lastPt.x, lastPt.y);
+                    ctx.lineTo(pt.x, pt.y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            });
+
+            function endPointer(e) {
+                if (!appState.isDrawing) return;
+                appState.isDrawing = false;
+                if (canvas.hasPointerCapture && canvas.hasPointerCapture(e.pointerId)) {
+                    canvas.releasePointerCapture(e.pointerId);
+                }
+
+                if (appState.currentStroke && appState.currentStroke.points.length > 0) {
+                    // Push completed stroke into master array
+                    appState.strokes.push(appState.currentStroke);
+                    appState.redoStack = []; // Reset redo
+                    appState.currentStroke = null;
+                }
+            }
+
+            canvas.addEventListener('pointerup', endPointer);
+            canvas.addEventListener('pointercancel', endPointer);
+
+            // --- 5. THE AI NEATIFY DOODLE ENGINE ---
+            function executeNeatify() {
+                // Check if strokes exist
+                if (!appState.strokes || appState.strokes.length === 0) {
+                    showToast('Draw something on the canvas first!', '✏️');
+                    return;
+                }
+
+                if (appState.isNeatifying) return;
+                appState.isNeatifying = true;
+
+                // 1. Trigger visible 1-second neon laser scan line sweep
+                scanBeam.classList.remove('hidden', 'laser-scanning');
+                void scanBeam.offsetWidth; // Force CSS reflow
+                scanBeam.classList.add('laser-scanning');
+
+                // Execute transformation during the scan
+                setTimeout(() => {
+                    // 2. For every stroke in strokes:
+                    for (let s = 0; s < appState.strokes.length; s++) {
+                        const stroke = appState.strokes[s];
+                        if (stroke.points && stroke.points.length > 2) {
+                            // a) Run RDP algorithm with epsilon = 2.5 to simplify micro-jitter
+                            const simplified = rdpSimplify(stroke.points, 2.5);
+                            // b) Run Chaikin algorithm (2 passes) to smooth sharp corners
+                            const smoothed = chaikinSmooth(simplified, 2);
+                            stroke.points = smoothed;
+                        }
+                    }
+
+                    // 3. Redraw canvas completely with smoothed points
+                    redrawAll();
+
+                    // Cleanup scan beam
+                    scanBeam.classList.add('hidden');
+                    scanBeam.classList.remove('laser-scanning');
+                    appState.isNeatifying = false;
+
+                    // 4. Display confirmation toast
+                    showToast('✨ Doodle Neatified! (0 jitter, vector curves applied)', '🎨');
+                }, 900);
+            }
+
+            // Wire Neatify triggers
+            document.getElementById('canvasNeatifyBtn').addEventListener('click', executeNeatify);
+            document.getElementById('navNeatifyBtn').addEventListener('click', executeNeatify);
+
+            // --- 6. TOOLBAR CONTROLS ---
+            // Tool toggles
+            const toolButtons = ['toolPen', 'toolHighlighter', 'toolEraser'];
+            toolButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                btn.addEventListener('click', () => {
+                    toolButtons.forEach(bId => {
+                        const b = document.getElementById(bId);
+                        b.classList.remove('bg-brandYellow');
+                        b.classList.add('bg-white');
+                    });
+                    btn.classList.add('bg-brandYellow');
+                    btn.classList.remove('bg-white');
+                    appState.tool = id.replace('tool', '').toLowerCase();
+                });
+            });
+
+            // Color Swatches
+            const colorButtons = document.querySelectorAll('.color-btn');
+            const colorLabel = document.getElementById('colorNameLabel');
+            colorButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    colorButtons.forEach(b => b.classList.remove('ring-2', 'ring-offset-1', 'ring-black'));
+                    btn.classList.add('ring-2', 'ring-offset-1', 'ring-black');
+                    appState.color = btn.getAttribute('data-color');
+                    appState.colorName = btn.getAttribute('data-name');
+                    colorLabel.innerText = appState.colorName;
+                    if (appState.tool === 'eraser') {
+                        document.getElementById('toolPen').click();
+                    }
+                });
+            });
+
+            // Brush Size
+            const sizeSlider = document.getElementById('brushSizeSlider');
+            const sizeLabel = document.getElementById('brushSizeDisplay');
+            sizeSlider.addEventListener('input', (e) => {
+                appState.brushSize = parseInt(e.target.value, 10);
+                sizeLabel.innerText = appState.brushSize + 'px';
+            });
+
+            // Undo
+            document.getElementById('undoBtn').addEventListener('click', () => {
+                if (appState.strokes.length > 0) {
+                    appState.redoStack.push(appState.strokes.pop());
+                    redrawAll();
+                    showToast('Undo applied', '↩️');
+                }
+            });
+
+            // Redo
+            document.getElementById('redoBtn').addEventListener('click', () => {
+                if (appState.redoStack.length > 0) {
+                    appState.strokes.push(appState.redoStack.pop());
+                    redrawAll();
+                    showToast('Redo applied', '↪️');
+                }
+            });
+
+            // Clear Canvas
+            document.getElementById('clearBoardBtn').addEventListener('click', () => {
+                if (appState.strokes.length > 0) {
+                    appState.strokes = [];
+                    appState.redoStack = [];
+                    redrawAll();
+                    showToast('Canvas cleared!', '🧹');
+                }
+            });
+
+            // Paper Style
+            window.setPaperTheme = function(theme) {
+                container.classList.remove('grid-notebook', 'lined-notebook', 'dot-notebook', 'blackboard-notebook');
+                if (theme === 'grid') container.classList.add('grid-notebook');
+                else if (theme === 'lined') container.classList.add('lined-notebook');
+                else if (theme === 'dot') container.classList.add('dot-notebook');
+                else if (theme === 'blackboard') container.classList.add('blackboard-notebook');
+                showToast(`Paper theme set to ${theme.toUpperCase()}`, '📜');
+            };
+
+            // Export PNG
+            window.exportBoardAsPNG = function() {
+                const expCanvas = document.createElement('canvas');
+                expCanvas.width = canvasWidth * 2;
+                expCanvas.height = canvasHeight * 2;
+                const expCtx = expCanvas.getContext('2d');
+                expCtx.scale(2, 2);
+
+                // Background
+                expCtx.fillStyle = '#FAF8F5';
+                expCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                // Draw existing canvas
+                expCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight);
+
+                // Draw sticky notes
+                const notes = container.querySelectorAll('.sticky-note');
+                const cRect = container.getBoundingClientRect();
+                notes.forEach(note => {
+                    const nRect = note.getBoundingClientRect();
+                    const x = nRect.left - cRect.left;
+                    const y = nRect.top - cRect.top;
+
+                    expCtx.save();
+                    expCtx.fillStyle = '#FEF3C7';
+                    expCtx.strokeStyle = '#2D3436';
+                    expCtx.lineWidth = 2.5;
+                    expCtx.fillRect(x, y, nRect.width, nRect.height);
+                    expCtx.strokeRect(x, y, nRect.width, nRect.height);
+
+                    const ta = note.querySelector('textarea');
+                    if (ta && ta.value) {
+                        expCtx.fillStyle = '#2D3436';
+                        expCtx.font = '16px "Patrick Hand", cursive';
+                        const lines = ta.value.split('\n');
+                        lines.forEach((line, idx) => {
+                            expCtx.fillText(line, x + 8, y + 24 + (idx * 20));
+                        });
+                    }
+                    expCtx.restore();
+                });
+
+                // Draw stickers
+                const stickers = container.querySelectorAll('.canvas-sticker');
+                stickers.forEach(stk => {
+                    const sRect = stk.getBoundingClientRect();
+                    const x = sRect.left - cRect.left;
+                    const y = sRect.top - cRect.top;
+                    expCtx.font = '36px sans-serif';
+                    expCtx.fillText(stk.innerText, x, y + 36);
+                });
+
+                const link = document.createElement('a');
+                link.download = `DoodleSquad-${appState.roomCode}.png`;
+                link.href = expCanvas.toDataURL('image/png');
+                link.click();
+                showToast('Whiteboard exported as PNG!', '📥');
+            };
+        });
+
+        // --- 7. DRAGGABLE ENGINE (STICKY NOTES & STICKERS) ---
+        function makeDraggable(el) {
+            let startX = 0, startY = 0;
+            let initialLeft = 0, initialTop = 0;
+            let isDragging = false;
+
+            function onStart(e) {
+                if (e.target.tagName === 'TEXTAREA' || e.target.classList.contains('delete-note-btn')) return;
+                isDragging = true;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                startX = clientX;
+                startY = clientY;
+                initialLeft = el.offsetLeft;
+                initialTop = el.offsetTop;
+
+                window.addEventListener('pointermove', onMove);
+                window.addEventListener('pointerup', onEnd);
+            }
+
+            function onMove(e) {
+                if (!isDragging) return;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                el.style.left = (initialLeft + dx) + 'px';
+                el.style.top = (initialTop + dy) + 'px';
+            }
+
+            function onEnd() {
+                isDragging = false;
+                window.removeEventListener('pointermove', onMove);
+                window.removeEventListener('pointerup', onEnd);
+            }
+
+            el.addEventListener('pointerdown', onStart);
+        }
+
+        document.querySelectorAll('.sticky-note, .canvas-sticker').forEach(el => makeDraggable(el));
+
+        // Delete sticky note delegate
+        document.getElementById('canvasContainer').addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-note-btn')) {
+                const note = e.target.closest('.sticky-note');
+                if (note) note.remove();
+            }
+        });
+
+        // Add Pastel Sticky Note
+        const stickyPastels = ['bg-amber-100', 'bg-rose-100', 'bg-sky-100', 'bg-emerald-100', 'bg-purple-100'];
+        document.getElementById('addStickyBtn').addEventListener('click', () => {
+            const container = document.getElementById('canvasContainer');
+            const color = stickyPastels[Math.floor(Math.random() * stickyPastels.length)];
+            const rot = (Math.random() * 6 - 3).toFixed(1);
+
+            const note = document.createElement('div');
+            note.className = `sticky-note absolute ${color} p-3 w-52 font-patrick rounded-sm`;
+            note.style.top = Math.floor(Math.random() * 120 + 40) + 'px';
+            note.style.left = Math.floor(Math.random() * 180 + 40) + 'px';
+            note.style.transform = `rotate(${rot}deg)`;
+
+            note.innerHTML = `
+                <div class="flex justify-between items-center border-b border-gray-400/30 pb-1 mb-1.5">
+                    <span class="font-bold text-xs text-brandCharcoal flex items-center gap-1">📌 Note</span>
+                    <button class="delete-note-btn text-gray-400 hover:text-red-500 font-bold text-xs p-0.5">✕</button>
+                </div>
+                <textarea class="w-full bg-transparent resize-none outline-none font-patrick text-base text-gray-800 leading-tight h-16" placeholder="Type squad note..."></textarea>
+            `;
+
+            container.appendChild(note);
+            makeDraggable(note);
+            showToast('Sticky note dropped on board!', '📝');
+        });
+
+        // Drop Mascot Sticker
+        document.querySelectorAll('.sticker-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const emoji = btn.getAttribute('data-emoji');
+                const container = document.getElementById('canvasContainer');
+                const sticker = document.createElement('div');
+                sticker.className = 'canvas-sticker text-5xl';
+                sticker.innerText = emoji;
+                sticker.style.top = Math.floor(Math.random() * 160 + 50) + 'px';
+                sticker.style.left = Math.floor(Math.random() * 260 + 80) + 'px';
+
+                container.appendChild(sticker);
+                makeDraggable(sticker);
+                showToast(`Mascot ${emoji} dropped on canvas!`, emoji);
+            });
+        });
+
+        // --- 8. SIMULATED PEER CURSORS ---
+        const peerMaya = document.getElementById('peerCursorMaya');
+        const peerChloe = document.getElementById('peerCursorChloe');
+
+        setInterval(() => {
+            if (peerMaya) {
+                const targetX = Math.floor(Math.random() * 240 + 160);
+                const targetY = Math.floor(Math.random() * 180 + 80);
+                peerMaya.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
+            }
+            if (peerChloe) {
+                const targetX = Math.floor(Math.random() * 220 + 360);
+                const targetY = Math.floor(Math.random() * 180 + 160);
+                peerChloe.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
+            }
+        }, 3200);
+
+        // --- 9. SQUAD CHAT LOGIC ---
+        function toggleChatDrawer() {
+            const drawer = document.getElementById('chatMessagesContainer');
+            const form = document.getElementById('chatForm');
+            const icon = document.getElementById('chatChevronIcon');
+
+            appState.isChatOpen = !appState.isChatOpen;
+            if (appState.isChatOpen) {
+                drawer.classList.remove('hidden');
+                form.classList.remove('hidden');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                drawer.classList.add('hidden');
+                form.classList.add('hidden');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        }
+
+        function handleSendChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            appendChatMsg('You (Devon)', msg, '👦🏽', true);
+            input.value = '';
+
+            setTimeout(() => {
+                const peerReplies = [
+                    "Awesome sketch! That neatified curve looks super crisp 🚀",
+                    "Let's add a sticky note for chapter 4 formulas!",
+                    "That star came out great! Keep going 🔥",
+                    "Ready for the next 25-min study sprint 🦉"
+                ];
+                const senders = [
+                    { name: 'Maya L.', avatar: '👧🏻' },
+                    { name: 'Chloe B.', avatar: '👩🏼' },
+                    { name: 'Leo (Cat)', avatar: '🐱' }
+                ];
+                const p = senders[Math.floor(Math.random() * senders.length)];
+                const reply = peerReplies[Math.floor(Math.random() * peerReplies.length)];
+                appendChatMsg(p.name, reply, p.avatar, false);
+            }, 1400);
+        }
+
+        function sendQuickCheer(emoji) {
+            appendChatMsg('You (Devon)', `Sent squad cheer ${emoji}!`, '👦🏽', true);
+            showToast(`Cheer ${emoji} sent to squad!`, emoji);
+        }
+
+        function appendChatMsg(sender, text, avatar, isYou = false) {
+            const container = document.getElementById('chatMessagesContainer');
+            const div = document.createElement('div');
+            div.className = 'flex items-start gap-1.5';
+            div.innerHTML = `
+                <span class="w-5 h-5 rounded-full ${isYou ? 'bg-brandMint' : 'bg-brandYellow'} sketch-border-sm flex items-center justify-center text-[10px] shrink-0 font-bold">${avatar}</span>
+                <div class="${isYou ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-gray-200'} p-2 rounded-lg sketch-border-sm max-w-[85%] border">
+                    <span class="font-bold text-gray-900 text-[11px] block">${sender}</span>
+                    <p class="text-gray-800 text-sm leading-snug">${text}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
 </body>
 </html>
