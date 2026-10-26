@@ -1,0 +1,483 @@
+import express from 'express';
+import { createServer as createViteServer } from 'vite';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = Number(process.env.PORT) || 3000;
+
+app.use(express.json());
+
+// In-memory data store for CampusPulse
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  avatar: string;
+  role: string;
+  online: boolean;
+  vibe: string;
+}
+
+const USERS: User[] = [
+  {
+    id: 'user-alex',
+    name: 'Alex Sharma',
+    email: 'alex@campus.edu',
+    department: 'CSE • 2nd Year',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    role: 'Lead Developer',
+    online: true,
+    vibe: '⚡ Deep Work',
+  },
+  {
+    id: 'user-riya',
+    name: 'Riya Patel',
+    email: 'riya@campus.edu',
+    department: 'AI & DS • 3rd Year',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    role: 'Fest Coordinator',
+    online: true,
+    vibe: '🔥 Shipping',
+  },
+  {
+    id: 'user-arjun',
+    name: 'Arjun Mehta',
+    email: 'arjun@campus.edu',
+    department: 'ECE • 2nd Year',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    role: 'Hardware Lead',
+    online: true,
+    vibe: '🎧 On Air',
+  },
+  {
+    id: 'user-sneha',
+    name: 'Sneha Rao',
+    email: 'sneha@campus.edu',
+    department: 'Design • 1st Year',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80',
+    role: 'UI Designer',
+    online: true,
+    vibe: '🎨 Creative flow',
+  },
+  {
+    id: 'user-kartik',
+    name: 'Kartik Verma',
+    email: 'kartik@campus.edu',
+    department: 'Mech • 3rd Year',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    role: 'Robotics Club',
+    online: false,
+    vibe: '☕ Compiling',
+  },
+];
+
+let currentUser: User = USERS[0];
+
+// Messages store
+interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar: string;
+  text: string;
+  timestamp: string;
+  reactions?: Record<string, number>;
+}
+
+let MESSAGES: ChatMessage[] = [
+  {
+    id: 'msg-1',
+    senderId: 'user-arjun',
+    senderName: 'Arjun Mehta',
+    senderAvatar: USERS[2].avatar,
+    text: "Who's joining the Hackathon squad sync tonight? 🎮",
+    timestamp: '10:14 AM',
+    reactions: { '🔥': 3, '👍': 4 },
+  },
+  {
+    id: 'msg-2',
+    senderId: 'user-riya',
+    senderName: 'Riya Patel',
+    senderAvatar: USERS[1].avatar,
+    text: 'Count me in! Just updated the fest registration portal 💕',
+    timestamp: '10:18 AM',
+    reactions: { '✨': 2 },
+  },
+  {
+    id: 'msg-3',
+    senderId: 'user-sneha',
+    senderName: 'Sneha Rao',
+    senderAvatar: USERS[3].avatar,
+    text: 'Finished the mascot art stickers! Sending preview in the group.',
+    timestamp: '10:20 AM',
+  },
+];
+
+// Activity Feed
+interface ActivityItem {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  text: string;
+  timestamp: string;
+}
+
+let ACTIVITIES: ActivityItem[] = [
+  {
+    id: 'act-1',
+    userId: 'user-riya',
+    userName: 'Riya',
+    userAvatar: USERS[1].avatar,
+    text: 'joined the Chill & Games room',
+    timestamp: '2m ago',
+  },
+  {
+    id: 'act-2',
+    userId: 'user-arjun',
+    userName: 'Arjun',
+    userAvatar: USERS[2].avatar,
+    text: 'shared a mood: Excited for the fest! 🎉',
+    timestamp: '8m ago',
+  },
+  {
+    id: 'act-3',
+    userId: 'user-sneha',
+    userName: 'Sneha',
+    userAvatar: USERS[3].avatar,
+    text: 'posted a new note in Study Corner',
+    timestamp: '12m ago',
+  },
+  {
+    id: 'act-4',
+    userId: 'user-kartik',
+    userName: 'Kartik',
+    userAvatar: USERS[4].avatar,
+    text: 'joined the Watch Party session',
+    timestamp: '15m ago',
+  },
+];
+
+// Events store
+interface EventItem {
+  id: string;
+  title: string;
+  date: string;
+  icon: string;
+  color: string;
+  joined: boolean;
+  attendeesCount: number;
+}
+
+let EVENTS: EventItem[] = [
+  {
+    id: 'event-hackathon',
+    title: 'Hackathon 2025',
+    date: 'Apr 28 • 10:00 AM',
+    icon: '</>',
+    color: 'indigo',
+    joined: false,
+    attendeesCount: 24,
+  },
+  {
+    id: 'event-cultural',
+    title: 'Cultural Fest Practice',
+    date: 'Apr 30 • 4:00 PM',
+    icon: '🎭',
+    color: 'pink',
+    joined: true,
+    attendeesCount: 18,
+  },
+  {
+    id: 'event-sports',
+    title: 'Sports Tournament',
+    date: 'May 3 • 9:00 AM',
+    icon: '🏆',
+    color: 'amber',
+    joined: false,
+    attendeesCount: 30,
+  },
+];
+
+// Notes store
+interface NoteItem {
+  id: string;
+  text: string;
+  timestamp: string;
+}
+
+let NOTES: NoteItem[] = [
+  {
+    id: 'note-1',
+    text: 'Class Schedule update: Lab 3 evaluation shifted to Friday 2 PM.',
+    timestamp: '10:00 AM',
+  },
+  {
+    id: 'note-2',
+    text: 'Assignment submission: Distributed Consensus paper review due tomorrow.',
+    timestamp: 'Yesterday',
+  },
+];
+
+// WatchParty State
+let WATCH_PARTY = {
+  isPlaying: false,
+  seconds: 872,
+  totalSeconds: 8325,
+  videoTitle: 'College Fest 2024 Aftermovie & Highlights',
+  reactions: ['🔥', '🎉', '🍿'],
+};
+
+// ================= API ROUTES =================
+
+// 1. Auth: Get Current User
+app.get('/api/auth/me', (_req, res) => {
+  res.json({ user: currentUser });
+});
+
+// 2. Auth: Login
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  const user = USERS.find((u) => u.email.toLowerCase() === (email || '').toLowerCase());
+  if (user) {
+    currentUser = user;
+    return res.json({ success: true, user });
+  }
+  // If not found in seed, create student profile dynamically
+  const nameFromEmail = email ? email.split('@')[0] : 'Campus Student';
+  const newUser: User = {
+    id: `user-${Date.now()}`,
+    name: nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1),
+    email: email || 'student@campus.edu',
+    department: 'Engineering • 1st Year',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    role: 'Student Member',
+    online: true,
+    vibe: '⚡ Deep Work',
+  };
+  USERS.push(newUser);
+  currentUser = newUser;
+  res.json({ success: true, user: newUser });
+});
+
+// 3. Auth: Register
+app.post('/api/auth/register', (req, res) => {
+  const { name, email, department, avatar } = req.body;
+  if (!name || !email) {
+    return res.status(400).json({ error: 'Name and email are required' });
+  }
+  const newUser: User = {
+    id: `user-${Date.now()}`,
+    name,
+    email,
+    department: department || 'General Engineering • 1st Year',
+    avatar: avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    role: 'Student Member',
+    online: true,
+    vibe: '⚡ Deep Work',
+  };
+  USERS.push(newUser);
+  currentUser = newUser;
+
+  // Add welcome activity
+  ACTIVITIES.unshift({
+    id: `act-${Date.now()}`,
+    userId: newUser.id,
+    userName: newUser.name,
+    userAvatar: newUser.avatar,
+    text: 'joined CampusPulse squad!',
+    timestamp: 'Just now',
+  });
+
+  res.json({ success: true, user: newUser });
+});
+
+// 4. Auth: Quick Switch (for testing friends connection)
+app.post('/api/auth/switch-user', (req, res) => {
+  const { userId } = req.body;
+  const found = USERS.find((u) => u.id === userId);
+  if (found) {
+    currentUser = found;
+    return res.json({ success: true, user: found });
+  }
+  res.status(404).json({ error: 'User not found' });
+});
+
+// 5. Friends & Squad Members
+app.get('/api/friends', (_req, res) => {
+  res.json({
+    squadName: 'CSE Dreamers',
+    totalMembers: 32,
+    onlineMembersCount: USERS.filter((u) => u.online).length + 8,
+    friends: USERS,
+  });
+});
+
+// 6. Messages
+app.get('/api/messages', (_req, res) => {
+  res.json({ messages: MESSAGES });
+});
+
+app.post('/api/messages', (req, res) => {
+  const { text } = req.body;
+  if (!text || !text.trim()) {
+    return res.status(400).json({ error: 'Text required' });
+  }
+  const newMsg: ChatMessage = {
+    id: `msg-${Date.now()}`,
+    senderId: currentUser.id,
+    senderName: currentUser.name,
+    senderAvatar: currentUser.avatar,
+    text: text.trim(),
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  };
+  MESSAGES.push(newMsg);
+
+  // Append activity
+  ACTIVITIES.unshift({
+    id: `act-${Date.now()}`,
+    userId: currentUser.id,
+    userName: currentUser.name.split(' ')[0],
+    userAvatar: currentUser.avatar,
+    text: `shared a message in squad chat: "${text.substring(0, 30)}..."`,
+    timestamp: 'Just now',
+  });
+
+  res.json({ success: true, message: newMsg });
+});
+
+app.post('/api/messages/:id/react', (req, res) => {
+  const { id } = req.params;
+  const { emoji } = req.body;
+  const msg = MESSAGES.find((m) => m.id === id);
+  if (msg) {
+    msg.reactions = msg.reactions || {};
+    msg.reactions[emoji] = (msg.reactions[emoji] || 0) + 1;
+    return res.json({ success: true, reactions: msg.reactions });
+  }
+  res.status(404).json({ error: 'Message not found' });
+});
+
+// 7. Activities
+app.get('/api/activity', (_req, res) => {
+  res.json({ activities: ACTIVITIES.slice(0, 10) });
+});
+
+// 8. Events
+app.get('/api/events', (_req, res) => {
+  res.json({ events: EVENTS });
+});
+
+app.post('/api/events/:id/toggle', (req, res) => {
+  const { id } = req.params;
+  const evt = EVENTS.find((e) => e.id === id);
+  if (evt) {
+    evt.joined = !evt.joined;
+    evt.attendeesCount += evt.joined ? 1 : -1;
+
+    ACTIVITIES.unshift({
+      id: `act-${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.name.split(' ')[0],
+      userAvatar: currentUser.avatar,
+      text: `${evt.joined ? 'registered for' : 'cancelled registration for'} ${evt.title}`,
+      timestamp: 'Just now',
+    });
+
+    return res.json({ success: true, event: evt });
+  }
+  res.status(404).json({ error: 'Event not found' });
+});
+
+// 9. Notes
+app.get('/api/notes', (_req, res) => {
+  res.json({ notes: NOTES });
+});
+
+app.post('/api/notes', (req, res) => {
+  const { text } = req.body;
+  if (!text || !text.trim()) {
+    return res.status(400).json({ error: 'Note text required' });
+  }
+  const newNote: NoteItem = {
+    id: `note-${Date.now()}`,
+    text: text.trim(),
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  };
+  NOTES.unshift(newNote);
+
+  ACTIVITIES.unshift({
+    id: `act-${Date.now()}`,
+    userId: currentUser.id,
+    userName: currentUser.name.split(' ')[0],
+    userAvatar: currentUser.avatar,
+    text: 'posted a new note in Study Corner',
+    timestamp: 'Just now',
+  });
+
+  res.json({ success: true, note: newNote });
+});
+
+app.delete('/api/notes/:id', (req, res) => {
+  const { id } = req.params;
+  NOTES = NOTES.filter((n) => n.id !== id);
+  res.json({ success: true });
+});
+
+// 10. Squad Mood
+app.post('/api/mood', (req, res) => {
+  const { mood } = req.body;
+  currentUser.vibe = mood;
+  ACTIVITIES.unshift({
+    id: `act-${Date.now()}`,
+    userId: currentUser.id,
+    userName: currentUser.name.split(' ')[0],
+    userAvatar: currentUser.avatar,
+    text: `shared a mood: ${mood}! 🎉`,
+    timestamp: 'Just now',
+  });
+  res.json({ success: true, mood });
+});
+
+// 11. WatchParty sync
+app.get('/api/watchparty', (_req, res) => {
+  res.json({ watchParty: WATCH_PARTY });
+});
+
+app.post('/api/watchparty/sync', (req, res) => {
+  const { isPlaying, seconds, videoTitle } = req.body;
+  if (isPlaying !== undefined) WATCH_PARTY.isPlaying = isPlaying;
+  if (seconds !== undefined) WATCH_PARTY.seconds = seconds;
+  if (videoTitle) WATCH_PARTY.videoTitle = videoTitle;
+  res.json({ success: true, watchParty: WATCH_PARTY });
+});
+
+// ================= VITE DEV MIDDLEWARE / STATIC PROD =================
+async function startServer() {
+  const isProd = process.env.NODE_ENV === 'production';
+  if (!isProd) {
+    const vite = await createViteServer({
+      server: { middlewareMode: true, hmr: process.env.DISABLE_HMR !== 'true' },
+      appType: 'spa',
+    });
+    app.use(vite.middlewares);
+  } else {
+    app.use(express.static(path.resolve(__dirname, 'dist')));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+    });
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[CampusPulse Server] Running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();
+
+
