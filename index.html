@@ -3,892 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoodleSquad - Fun & Creative Student Collaboration</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Hand-drawn & Playful aesthetic -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Patrick+Hand&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brandYellow: '#FFD93D',
-                        brandLavender: '#C3B1E1',
-                        brandBlue: '#6C5CE7',
-                        brandSky: '#74B9FF',
-                        brandCoral: '#FF7675',
-                        brandMint: '#55E6C1',
-                        paperBg: '#FBF9F1'
-                    },
-                    fontFamily: {
-                        fredoka: ['Fredoka', 'sans-serif'],
-                        patrick: ['Patrick Hand', 'cursive'],
-                        kalam: ['Kalam', 'cursive']
-                    }
-                }
-            }
-        }
-    </script>
-
+    <title>DoodleSquad - Collaborative Homework & Creative Study Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Poppins & Comic Neue -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Notebook patterns */
-        .paper-grid {
+        body {
+            font-family: 'Poppins', sans-serif;
             background-color: #FAF8F5;
-            background-image: 
-                radial-gradient(#C5D1E8 1.5px, transparent 1.5px),
-                linear-gradient(to right, rgba(255, 118, 117, 0.25) 1px, transparent 1px);
-            background-size: 24px 24px, 100% 100%;
-            background-position: 0 0, 48px 0;
+            color: #1F2937;
         }
-
-        .paper-lined {
-            background-color: #FAF8F5;
-            background-image: linear-gradient(#D2DAE2 1px, transparent 1px);
-            background-size: 100% 28px;
+        .comic-font {
+            font-family: 'Comic Neue', cursive, sans-serif;
         }
-
-        .paper-dots {
-            background-color: #FAF8F5;
-            background-image: radial-gradient(#95A5A6 1.5px, transparent 1.5px);
-            background-size: 20px 20px;
-        }
-
-        .paper-dark {
-            background-color: #1E272E;
-            background-image: radial-gradient(#485460 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        /* Sketchy Borders */
         .sketch-border {
-            border: 3px solid #2D3436;
-            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-            box-shadow: 4px 5px 0px #2D3436;
+            border: 3px solid #1F2937;
+            border-radius: 25px 18px 27px 15px / 18px 25px 15px 27px;
+            box-shadow: 4px 4px 0px #1F2937;
         }
-
-        .sketch-border-sm {
-            border: 2px solid #2D3436;
-            border-radius: 12px 255px 15px 225px/225px 15px 255px 15px;
-            box-shadow: 3px 3px 0px #2D3436;
-        }
-
         .sketch-button {
-            border: 2.5px solid #2D3436;
-            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-            box-shadow: 3px 3px 0px #2D3436;
+            border: 3px solid #1F2937;
+            border-radius: 20px 15px 22px 14px / 15px 20px 14px 22px;
+            box-shadow: 3px 3px 0px #1F2937;
             transition: all 0.1s ease;
         }
-
         .sketch-button:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 5px 5px 0px #2D3436;
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px #1F2937;
         }
-
         .sketch-button:active {
             transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #2D3436;
+            box-shadow: 1px 1px 0px #1F2937;
         }
-
-        .sticky-note {
-            box-shadow: 4px 6px 12px rgba(0,0,0,0.08), 2px 2px 0px #2D3436;
-            border: 2px solid #2D3436;
-        }
-
-        .canvas-sticker {
-            position: absolute;
-            user-select: none;
-            cursor: grab;
-            transition: transform 0.15s ease;
-        }
-        .canvas-sticker:hover {
-            transform: scale(1.15) rotate(6deg);
-        }
-
-        /* Scan beam animation */
-        @keyframes scanDown {
-            0% { top: 0%; opacity: 0.9; }
-            50% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-
-        .scan-line {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #55E6C1, #6C5CE7, #FF7675, transparent);
-            box-shadow: 0 0 15px #55E6C1, 0 0 30px #6C5CE7;
-            pointer-events: none;
-            display: none;
-            z-index: 40;
-        }
-        .scan-line.active {
-            display: block;
-            animation: scanDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        /* Avatar Selection Outline */
-        .avatar-selected {
-            border-color: #6C5CE7 !important;
-            background-color: #F3E8FF !important;
-            transform: scale(1.05) translateY(-4px);
-            box-shadow: 6px 8px 0px #6C5CE7 !important;
+        .paper-bg {
+            background-image: radial-gradient(#E5E7EB 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
         }
     </style>
 </head>
-<body class="paper-grid font-fredoka text-gray-800 antialiased min-h-screen flex flex-col selection:bg-brandYellow selection:text-black">
+<body class="paper-bg min-h-screen flex flex-col">
 
-    <!-- TOP NAVIGATION -->
-    <nav class="sticky top-0 z-40 bg-paperBg/95 backdrop-blur-md border-b-4 border-gray-900 px-4 lg:px-8 py-3">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brandYellow rounded-full sketch-border-sm flex items-center justify-center text-xl">
-                    ✏️
-                </div>
-                <div>
-                    <span class="font-bold text-2xl tracking-wide text-gray-900 leading-none">Doodle<span class="text-brandBlue">Squad</span></span>
-                    <span class="hidden sm:inline font-patrick text-xs text-gray-600 font-bold block -mt-1">Where Brainstorms Hatch! 🐣</span>
-                </div>
-            </div>
-
-            <!-- Squad Badge & Share -->
-            <div class="flex items-center gap-3">
-                <div class="hidden sm:flex items-center gap-2 bg-white px-3 py-1.5 sketch-border-sm text-xs font-bold">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="roomCodeText">SQUAD-8492</span>
-                    <button id="copyInviteBtn" class="text-brandBlue hover:text-indigo-800 ml-1 text-sm" title="Copy Invite Link">
-                        <i class="fa-regular fa-copy"></i>
-                    </button>
-                </div>
-                <button id="navNeatifyBtn" class="sketch-button bg-brandYellow px-4 py-2 font-bold text-gray-900 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-brandBlue"></i> ✨ AI Neatify
-                </button>
-                <a href="#playground" class="sketch-button bg-brandMint px-4 py-2 font-bold text-gray-900 text-sm hidden md:inline-flex items-center gap-1">
-                    <i class="fa-solid fa-paintbrush"></i> Canvas
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- MAIN CANVAS STUDIO -->
-    <main id="playground" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
-        
-        <!-- Header & Top Actions -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-2">
-                    Interactive Student Whiteboard
-                    <span id="activeAvatarBadge" class="text-xs bg-brandLavender px-2.5 py-1 rounded-full sketch-border-sm font-patrick font-bold text-gray-900">
-                        Avatar: 🦉 Brainy Owl
-                    </span>
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-[#FAF8F5]/90 backdrop-blur-md border-b-3 border-gray-900 px-4 sm:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">✏️</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-wide comic-font text-gray-900">
+                    Doodle<span class="text-amber-500">Squad</span> <span class="text-xl">🐣</span>
                 </h1>
-                <p class="font-patrick text-lg text-gray-600">Draw freely, drop sticky notes, chat with friends, and hit Neatify to clean up jitter!</p>
             </div>
-            <div class="flex items-center gap-2 flex-wrap">
-                <button id="undoBtn" class="sketch-button bg-white px-3 py-1.5 text-sm font-bold" title="Undo">
-                    <i class="fa-solid fa-rotate-left"></i> Undo
-                </button>
-                <button id="redoBtn" class="sketch-button bg-white px-3 py-1.5 text-sm font-bold" title="Redo">
-                    <i class="fa-solid fa-rotate-right"></i> Redo
-                </button>
-                <button id="clearBtn" class="sketch-button bg-brandCoral text-white px-3 py-1.5 text-sm font-bold" title="Clear">
-                    <i class="fa-solid fa-trash-can"></i> Clear
-                </button>
-                <button id="exportBtn" class="sketch-button bg-brandSky text-gray-900 px-3 py-1.5 text-sm font-bold" title="Download PNG">
-                    <i class="fa-solid fa-download"></i> Save PNG
-                </button>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 font-semibold text-sm sm:text-base">
+                <a href="#video" class="hover:text-amber-600 flex items-center gap-1">🎬 Video</a>
+                <a href="#superpowers" class="hover:text-amber-600">Superpowers</a>
+                <a href="#canvas" class="hover:text-amber-600">Canvas</a>
+                <a href="#squads" class="hover:text-amber-600">Squads</a>
+                <a href="#wall" class="hover:text-amber-600">Wall</a>
+            </nav>
+
+            <!-- Streak & XP Counters -->
+            <div class="flex items-center gap-3">
+                <div class="sketch-button bg-amber-100 px-3 py-1.5 flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+                    <span>🔥</span> <span>6d</span>
+                </div>
+                <div class="sketch-button bg-yellow-100 px-3 py-1.5 flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+                    <span>⭐</span> <span>1250</span>
+                </div>
+                <div class="sketch-button bg-white p-1 rounded-full w-9 h-9 flex items-center justify-center text-lg">
+                    🐣
+                </div>
             </div>
         </div>
+    </header>
 
-        <!-- Studio Container -->
-        <div class="sketch-border bg-white p-3 sm:p-4 shadow-xl flex flex-col lg:flex-row gap-4 relative">
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 py-10 w-full space-y-16">
+
+        <!-- Hero Section -->
+        <section class="text-center space-y-6 pt-4">
+            <div class="inline-block sketch-button bg-amber-200 px-4 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider rotate-[-1deg]">
+                ✨ Homework is way better together!
+            </div>
             
-            <!-- TOOLBAR PANEL -->
-            <div class="w-full lg:w-60 bg-paperBg p-3 sketch-border-sm shrink-0 flex flex-col gap-4">
-                
-                <!-- Tools -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700 mb-2 font-fredoka">Tools</h3>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button id="toolPen" class="tool-btn sketch-button bg-brandYellow font-bold p-1.5 text-xs flex items-center justify-center gap-1 active-tool">
-                            <i class="fa-solid fa-pen"></i> Pen
-                        </button>
-                        <button id="toolHighlighter" class="tool-btn sketch-button bg-white font-bold p-1.5 text-xs flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-highlighter"></i> Glow
-                        </button>
-                        <button id="toolEraser" class="tool-btn sketch-button bg-white font-bold p-1.5 text-xs flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-eraser"></i> Erase
-                        </button>
-                    </div>
-                </div>
+            <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight comic-font text-gray-900 max-w-4xl mx-auto leading-tight">
+                Turn Boring Homework into <span class="bg-yellow-300 px-2 py-0.5 rounded-lg border-2 border-gray-900 inline-block rotate-[1deg]">Brilliant Brainstorms!</span>
+            </h2>
+            
+            <p class="text-gray-700 text-base sm:text-lg max-w-2xl mx-auto font-medium">
+                Stuck on algebra or biology? Scribble on the live sketchpad, summon step-by-step chalkboard breakdowns from our Superpower AI, and crack study challenges with your squad.
+            </p>
 
-                <!-- Palette -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700 mb-2 font-fredoka">Ink Palette</h3>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <button class="color-btn w-7 h-7 rounded-full border-2 border-black bg-gray-900 ring-2 ring-black" data-color="#2D3436"></button>
-                        <button class="color-btn w-7 h-7 rounded-full border-2 border-black bg-rose-500" data-color="#FF7675"></button>
-                        <button class="color-btn w-7 h-7 rounded-full border-2 border-black bg-indigo-600" data-color="#6C5CE7"></button>
-                        <button class="color-btn w-7 h-7 rounded-full border-2 border-black bg-amber-400" data-color="#FFD93D"></button>
-                        <button class="color-btn w-7 h-7 rounded-full border-2 border-black bg-emerald-400" data-color="#55E6C1"></button>
-                        <button class="color-btn w-7 h-7 rounded-full border-2 border-black bg-sky-400" data-color="#74B9FF"></button>
-                    </div>
-                </div>
+            <!-- Video Walkthrough Pill -->
+            <div class="flex justify-center pt-2">
+                <button class="sketch-button bg-white hover:bg-gray-50 px-6 py-3 font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>🎬</span> Watch Video Walkthrough (With AI Voice Dubbing) <span class="text-xs bg-amber-400 text-gray-900 px-2 py-0.5 rounded-full font-extrabold">INTERACTIVE TOUR</span>
+                </button>
+            </div>
 
-                <!-- Stroke Width Slider -->
-                <div>
-                    <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
-                        <span>Stroke Width</span>
-                        <span id="brushSizeDisplay" class="text-brandBlue">4px</span>
+            <!-- Hatch Solution Interactive Prompt Bar -->
+            <div class="max-w-2xl mx-auto pt-6">
+                <div class="sketch-border bg-white p-3 sm:p-4 flex flex-col sm:flex-row gap-3 items-center">
+                    <div class="flex items-center gap-3 w-full px-2">
+                        <span class="text-xl">✏️</span>
+                        <input type="text" id="prompt-input" placeholder="Type or paste any homework problem (e.g., 2x + 5 = 17)..." class="w-full bg-transparent focus:outline-none text-gray-800 placeholder-gray-400 font-medium text-sm sm:text-base">
                     </div>
-                    <input type="range" id="brushSize" min="2" max="28" value="4" class="w-full accent-brandBlue cursor-pointer">
-                </div>
-
-                <!-- Paper Themes -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700 mb-2 font-fredoka">Paper Sheet</h3>
-                    <div class="grid grid-cols-2 gap-1.5 text-xs font-bold">
-                        <button class="paper-btn sketch-button bg-white py-1 px-2 text-left" data-paper="paper-grid">📐 Grid</button>
-                        <button class="paper-btn sketch-button bg-white py-1 px-2 text-left" data-paper="paper-lined">📝 Lined</button>
-                        <button class="paper-btn sketch-button bg-white py-1 px-2 text-left" data-paper="paper-dots">⠕ Dots</button>
-                        <button class="paper-btn sketch-button bg-gray-800 text-white py-1 px-2 text-left" data-paper="paper-dark">⬛ Board</button>
-                    </div>
-                </div>
-
-                <!-- Add Items -->
-                <div class="pt-2 border-t-2 border-dashed border-gray-300 space-y-2">
-                    <button id="addStickyBtn" class="w-full sketch-button bg-brandMint text-gray-900 font-bold py-1.5 text-xs flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-note-sticky"></i> + Add Sticky Note
+                    <button onclick="hatchSolution()" class="sketch-button bg-amber-400 hover:bg-amber-300 text-gray-900 font-extrabold px-6 py-3 w-full sm:w-auto whitespace-nowrap flex items-center justify-center gap-2">
+                        <span>Hatch Solution</span> <span>🐣</span>
                     </button>
-                    <div class="grid grid-cols-4 gap-1">
-                        <button class="sticker-btn text-xl p-1 bg-white sketch-border-sm hover:scale-110" data-emoji="🦉">🦉</button>
-                        <button class="sticker-btn text-xl p-1 bg-white sketch-border-sm hover:scale-110" data-emoji="🚀">🚀</button>
-                        <button class="sticker-btn text-xl p-1 bg-white sketch-border-sm hover:scale-110" data-emoji="🐱">🐱</button>
-                        <button class="sticker-btn text-xl p-1 bg-white sketch-border-sm hover:scale-110" data-emoji="✏️">✏️</button>
-                    </div>
+                </div>
+
+                <!-- Quick Prompt Suggestions -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs sm:text-sm">
+                    <span class="text-gray-500 font-medium">Try asking:</span>
+                    <button onclick="setPrompt('2x + 5 = 17')" class="sketch-button bg-white px-3 py-1 hover:bg-amber-50 font-medium">2x + 5 = 17</button>
+                    <button onclick="setPrompt('How do plants make food?')" class="sketch-button bg-white px-3 py-1 hover:bg-amber-50 font-medium">How do plants make food?</button>
+                    <button onclick="setPrompt('Pythagorean theorem in plain english')" class="sketch-button bg-white px-3 py-1 hover:bg-amber-50 font-medium">Pythagorean theorem</button>
+                    <button onclick="setPrompt('Newton 3rd law mnemonic rhyme')" class="sketch-button bg-white px-3 py-1 hover:bg-amber-50 font-medium">Newton 3rd law</button>
                 </div>
             </div>
+        </section>
 
-            <!-- CANVAS DRAWING WORKSPACE -->
-            <div id="canvasViewport" class="flex-1 relative min-h-[500px] h-[550px] overflow-hidden sketch-border-sm paper-grid select-none cursor-crosshair">
-                
-                <!-- Laser Scan Line -->
-                <div id="scanLine" class="scan-line"></div>
-
-                <!-- Canvas -->
-                <canvas id="mainCanvas" class="absolute inset-0 w-full h-full z-10"></canvas>
-
-                <!-- Initial Demo Sticky Note -->
-                <div class="sticky-note absolute p-3 w-48 bg-amber-100 z-20 font-patrick rounded-sm cursor-grab" style="top: 24px; left: 24px; transform: rotate(-2deg);">
-                    <div class="flex justify-between items-center border-b border-amber-300 pb-1 mb-1 text-xs">
-                        <span class="font-bold text-amber-800">📌 Group Brainstorm</span>
-                        <button class="delete-note text-gray-500 hover:text-red-500 font-bold">✕</button>
-                    </div>
-                    <textarea class="w-full bg-transparent resize-none outline-none font-patrick text-lg text-gray-800 leading-tight h-20" placeholder="Type here...">Study squad review session for tomorrow's demo! 💡</textarea>
-                </div>
-
-                <!-- Initial Mascot Sticker -->
-                <div class="canvas-sticker z-20 text-4xl" style="top: 140px; left: 260px;" title="Drag me!">
-                    🦉
-                </div>
-
-                <div class="absolute bottom-2 right-2 pointer-events-none text-gray-400 font-patrick text-xs z-20">
-                    DoodleSquad • Draw & Neatify
-                </div>
+        <!-- Feature Highlights Grid -->
+        <section id="superpowers" class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            <div class="sketch-border bg-white p-6 space-y-3 hover:translate-y-[-2px] transition-transform">
+                <div class="text-3xl">🖌️</div>
+                <h3 class="text-xl font-bold comic-font">Live Sandbox</h3>
+                <p class="text-sm text-gray-600 font-medium leading-relaxed">Doodle with chalk, crayons, neon highlighters, and sticky notes on an infinite digital pad.</p>
             </div>
+            <div class="sketch-border bg-white p-6 space-y-3 hover:translate-y-[-2px] transition-transform">
+                <div class="text-3xl">⚡</div>
+                <h3 class="text-xl font-bold comic-font">AI Superpowers</h3>
+                <p class="text-sm text-gray-600 font-medium leading-relaxed">Step-by-step visual chalkboard proofs, memory rhymes, and interactive mini-quizzes.</p>
+            </div>
+            <div class="sketch-border bg-white p-6 space-y-3 hover:translate-y-[-2px] transition-transform">
+                <div class="text-3xl">👥</div>
+                <h3 class="text-xl font-bold comic-font">Study Squads</h3>
+                <p class="text-sm text-gray-600 font-medium leading-relaxed">Synchronized 25-min Pomodoro timer, shared problem checklist, and live squad chat.</p>
+            </div>
+        </section>
 
-            <!-- SQUAD CHAT PANEL -->
-            <div class="w-full lg:w-72 bg-paperBg p-3 sketch-border-sm shrink-0 flex flex-col justify-between h-[550px]">
+        <!-- Daily Homework Challenges Section -->
+        <section class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-gray-900 pb-4">
                 <div>
-                    <div class="flex items-center justify-between pb-2 border-b-2 border-gray-300 mb-2">
-                        <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700 font-fredoka flex items-center gap-1.5">
-                            <i class="fa-solid fa-comments text-brandBlue"></i> Squad Chat
-                        </h3>
-                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">
-                            4 Online
-                        </span>
-                    </div>
-
-                    <!-- Online Squad Members Avatars -->
-                    <div class="flex items-center gap-2 mb-3 bg-white p-2 sketch-border-sm">
-                        <span class="text-xs font-bold text-gray-500">Squad:</span>
-                        <span class="text-xs px-1.5 py-0.5 rounded bg-amber-100 border border-amber-300 font-bold" title="Maya L.">👧 Maya</span>
-                        <span class="text-xs px-1.5 py-0.5 rounded bg-sky-100 border border-sky-300 font-bold" title="Devon V.">👦 Devon</span>
-                        <span class="text-xs px-1.5 py-0.5 rounded bg-rose-100 border border-rose-300 font-bold" title="Chloe B.">👩 Chloe</span>
-                    </div>
-
-                    <!-- Message Feed -->
-                    <div id="chatFeed" class="space-y-2 overflow-y-auto max-h-[330px] pr-1 text-xs">
-                        <div class="bg-white p-2 rounded sketch-border-sm">
-                            <span class="font-bold text-brandBlue">Devon:</span>
-                            <p class="text-gray-800 font-patrick text-sm">Hey team! Just sketched the architecture box. Click Neatify to smooth it out!</p>
-                        </div>
-                        <div class="bg-white p-2 rounded sketch-border-sm">
-                            <span class="font-bold text-brandCoral">Maya:</span>
-                            <p class="text-gray-800 font-patrick text-sm">Looks awesome. I'm adding a sticky note for the API steps! 🚀</p>
-                        </div>
-                    </div>
+                    <span class="text-xs uppercase font-extrabold tracking-wider text-amber-600">Daily Brain Warm-ups</span>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold comic-font">Daily Homework Challenges 🎯</h3>
                 </div>
+                <p class="text-xs sm:text-sm text-gray-600 font-medium">Solve these creative sketch prompts to keep your streak alive and unlock rare stickers!</p>
+            </div>
 
-                <!-- Input & Reaction Bar -->
-                <div class="pt-2 border-t-2 border-dashed border-gray-300 space-y-2">
-                    <!-- Quick Cheers -->
-                    <div class="flex justify-between gap-1">
-                        <button class="cheer-btn text-sm bg-white hover:bg-yellow-100 px-2 py-0.5 rounded border border-gray-300" data-cheer="🔥">🔥</button>
-                        <button class="cheer-btn text-sm bg-white hover:bg-yellow-100 px-2 py-0.5 rounded border border-gray-300" data-cheer="⭐">⭐</button>
-                        <button class="cheer-btn text-sm bg-white hover:bg-yellow-100 px-2 py-0.5 rounded border border-gray-300" data-cheer="🧠">🧠</button>
-                        <button class="cheer-btn text-sm bg-white hover:bg-yellow-100 px-2 py-0.5 rounded border border-gray-300" data-cheer="🙌">🙌</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Challenge 1 -->
+                <div class="sketch-border bg-white p-6 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-2.5 py-1 rounded-md">🔥 ACTIVE STREAK</span>
+                            <span class="text-xs font-bold text-gray-500 uppercase">Easy • Math</span>
+                        </div>
+                        <h4 class="text-xl font-bold comic-font text-gray-900">Fraction Pizza Party 🍕</h4>
+                        <p class="text-sm text-gray-600 font-medium">Draw a pizza cut into 8 slices. Color 3/8 with pepperoni and 2/8 with mushrooms. What fraction is plain cheese?</p>
                     </div>
-                    <form id="chatForm" class="flex gap-1.5">
-                        <input id="chatInput" type="text" placeholder="Type to squad..." class="flex-1 bg-white border-2 border-gray-800 rounded px-2 py-1 text-xs outline-none focus:border-brandBlue">
-                        <button type="submit" class="sketch-button bg-brandYellow px-3 py-1 text-xs font-bold">
-                            <i class="fa-solid fa-paper-plane"></i>
+                    <div class="space-y-3 pt-2 border-t border-gray-100">
+                        <div class="text-xs font-bold text-amber-700">Reward: +150 XP • Pizza Slicer 🍕</div>
+                        <button class="sketch-button w-full bg-amber-400 hover:bg-amber-300 font-bold py-2 px-4 text-sm flex items-center justify-center gap-2">
+                            <span>Draw on Canvas</span> <span>🖌️</span>
                         </button>
-                    </form>
+                    </div>
+                </div>
+
+                <!-- Challenge 2 -->
+                <div class="sketch-border bg-white p-6 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-md">✓ COMPLETED</span>
+                            <span class="text-xs font-bold text-gray-500 uppercase">Medium • Science</span>
+                        </div>
+                        <h4 class="text-xl font-bold comic-font text-gray-900">Photosynthesis Solar Lab ☀️🌱</h4>
+                        <p class="text-sm text-gray-600 font-medium">Sketch a plant leaf with arrows for sunlight, CO₂, and H₂O entering, and Oxygen & Glucose emerging.</p>
+                    </div>
+                    <div class="space-y-3 pt-2 border-t border-gray-100">
+                        <div class="text-xs font-bold text-emerald-700">Reward: +200 XP • Solar Bot 🌻</div>
+                        <button disabled class="sketch-button w-full bg-emerald-100 text-emerald-800 font-bold py-2 px-4 text-sm flex items-center justify-center gap-2 cursor-default">
+                            <span>Challenge Completed!</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Challenge 3 -->
+                <div class="sketch-border bg-white p-6 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-purple-100 text-purple-800 text-xs font-extrabold px-2.5 py-1 rounded-md">⚡ BRAIN MELTER</span>
+                            <span class="text-xs font-bold text-gray-500 uppercase">Physics</span>
+                        </div>
+                        <h4 class="text-xl font-bold comic-font text-gray-900">Gravity Pendulum Physics ⏱️</h4>
+                        <p class="text-sm text-gray-600 font-medium">Doodle a swinging pendulum showing where Potential Energy is maximum vs where Kinetic Energy is peak.</p>
+                    </div>
+                    <div class="space-y-3 pt-2 border-t border-gray-100">
+                        <div class="text-xs font-bold text-amber-700">Reward: +300 XP • Kinetic Master ⚡</div>
+                        <button class="sketch-button w-full bg-amber-400 hover:bg-amber-300 font-bold py-2 px-4 text-sm flex items-center justify-center gap-2">
+                            <span>Draw on Canvas</span> <span>🖌️</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </section>
 
-        </div>
-    </main>
-
-    <!-- SECTION 2: CHOOSE YOUR AVATAR SQUAD ROSTER (CLICKABLE CLASS CARDS) -->
-    <section class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div class="text-center mb-6">
-            <span class="sketch-border-sm bg-brandYellow font-patrick text-lg font-bold px-3 py-0.5 inline-block rotate-1 mb-1">
-                Select Your Study Avatar Class 🐾
-            </span>
-            <h2 class="text-3xl font-black text-gray-900">Pick A Class To Stamp Your Mark</h2>
-            <p class="font-patrick text-xl text-gray-600">Click any avatar below to equip your mascot and instantly stamp it on the board!</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <!-- Class 1: Brainy Owl -->
-            <div class="avatar-card sketch-border bg-white p-5 text-center cursor-pointer hover:-translate-y-1 transition-all avatar-selected" data-avatar="🦉 Brainy Owl" data-emoji="🦉">
-                <div class="w-20 h-20 mx-auto mb-3 bg-brandYellow rounded-full sketch-border flex items-center justify-center text-4xl">
-                    🦉
+        <!-- Community Wall of Fame Section -->
+        <section id="wall" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-gray-900 pb-4">
+                <div>
+                    <span class="text-xs uppercase font-extrabold tracking-wider text-amber-600">Peer Hall of Fame</span>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold comic-font">Community Wall of Fame 🌟</h3>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900">Brainy Owl</h3>
-                <span class="inline-block bg-yellow-100 text-yellow-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-yellow-300">
-                    Master Summarizer
-                </span>
-                <p class="font-patrick text-base text-gray-600">Cleans up study notes and extracts core exam flashcards.</p>
-                <button class="mt-3 w-full sketch-button bg-brandYellow text-gray-900 font-bold py-1 text-xs">
-                    Select Avatar 🎯
-                </button>
+                <p class="text-xs sm:text-sm text-gray-600 font-medium">Check out how fellow students visualize tough homework. Star your favorites or clone any sketchnote to your sandbox!</p>
             </div>
 
-            <!-- Class 2: Rocket Bot -->
-            <div class="avatar-card sketch-border bg-white p-5 text-center cursor-pointer hover:-translate-y-1 transition-all" data-avatar="🚀 Rocket Bot" data-emoji="🚀">
-                <div class="w-20 h-20 mx-auto mb-3 bg-brandSky rounded-full sketch-border flex items-center justify-center text-4xl">
-                    🚀
-                </div>
-                <h3 class="text-xl font-bold text-gray-900">Rocket Bot</h3>
-                <span class="inline-block bg-sky-100 text-sky-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-sky-300">
-                    Deadline Crusher
-                </span>
-                <p class="font-patrick text-base text-gray-600">Keeps track of project milestones and sprint timers.</p>
-                <button class="mt-3 w-full sketch-button bg-brandSky text-gray-900 font-bold py-1 text-xs">
-                    Select Avatar 🎯
-                </button>
-            </div>
-
-            <!-- Class 3: Pencil Pal -->
-            <div class="avatar-card sketch-border bg-white p-5 text-center cursor-pointer hover:-translate-y-1 transition-all" data-avatar="✏️ Pencil Pal" data-emoji="✏️">
-                <div class="w-20 h-20 mx-auto mb-3 bg-brandCoral rounded-full sketch-border flex items-center justify-center text-4xl">
-                    ✏️
-                </div>
-                <h3 class="text-xl font-bold text-gray-900">Pencil Pal</h3>
-                <span class="inline-block bg-rose-100 text-rose-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-rose-300">
-                    Diagram Specialist
-                </span>
-                <p class="font-patrick text-base text-gray-600">Aligns rough geometry into crisp mindmaps and circuits.</p>
-                <button class="mt-3 w-full sketch-button bg-brandCoral text-white font-bold py-1 text-xs">
-                    Select Avatar 🎯
-                </button>
-            </div>
-
-            <!-- Class 4: Doodle Cat -->
-            <div class="avatar-card sketch-border bg-white p-5 text-center cursor-pointer hover:-translate-y-1 transition-all" data-avatar="🐱 Doodle Cat" data-emoji="🐱">
-                <div class="w-20 h-20 mx-auto mb-3 bg-brandMint rounded-full sketch-border flex items-center justify-center text-4xl">
-                    🐱
-                </div>
-                <h3 class="text-xl font-bold text-gray-900">Doodle Cat</h3>
-                <span class="inline-block bg-emerald-100 text-emerald-800 font-patrick font-bold text-xs px-2.5 py-0.5 rounded-full my-1.5 border border-emerald-300">
-                    Morale Booster
-                </span>
-                <p class="font-patrick text-base text-gray-600">Drops high-energy cheers and study cheer stickers.</p>
-                <button class="mt-3 w-full sketch-button bg-brandMint text-gray-900 font-bold py-1 text-xs">
-                    Select Avatar 🎯
-                </button>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-patrick font-bold border-2 border-brandYellow shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300 z-50">
-        Notification
-    </div>
-
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // --- APP STATE ---
-        const state = {
-            strokes: [],
-            redoStack: [],
-            currentStroke: null,
-            isDrawing: false,
-            tool: 'pen',
-            color: '#2D3436',
-            brushSize: 4,
-            currentPaper: 'paper-grid',
-            activeAvatar: '🦉 Brainy Owl',
-            activeEmoji: '🦉'
-        };
-
-        const canvas = document.getElementById('mainCanvas');
-        const ctx = canvas.getContext('2d');
-        const viewport = document.getElementById('canvasViewport');
-        const toast = document.getElementById('toast');
-
-        function showToast(msg) {
-            toast.innerText = msg;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-            }, 2500);
-        }
-
-        // --- RESIZE CANVAS (HIGH DPI) ---
-        function resizeCanvas() {
-            const rect = viewport.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-            redrawAll();
-        }
-        window.addEventListener('resize', resizeCanvas);
-
-        // --- DRAWING LOGIC WITH POINTER EVENTS ---
-        function getCoords(e) {
-            const rect = canvas.getBoundingClientRect();
-            return {
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top
-            };
-        }
-
-        canvas.addEventListener('pointerdown', (e) => {
-            canvas.setPointerCapture(e.pointerId);
-            state.isDrawing = true;
-            state.redoStack = [];
-            const pt = getCoords(e);
-            state.currentStroke = {
-                tool: state.tool,
-                color: state.color,
-                size: state.brushSize,
-                points: [pt]
-            };
-        });
-
-        canvas.addEventListener('pointermove', (e) => {
-            if (!state.isDrawing || !state.currentStroke) return;
-            const pt = getCoords(e);
-            state.currentStroke.points.push(pt);
-            
-            // Fast delta draw
-            const pts = state.currentStroke.points;
-            if (pts.length >= 2) {
-                const p1 = pts[pts.length - 2];
-                const p2 = pts[pts.length - 1];
-
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                
-                if (state.tool === 'highlighter') {
-                    ctx.globalAlpha = 0.35;
-                    ctx.strokeStyle = state.color;
-                    ctx.lineWidth = state.brushSize * 3;
-                } else if (state.tool === 'eraser') {
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.lineWidth = state.brushSize * 4;
-                } else {
-                    ctx.strokeStyle = state.color;
-                    ctx.lineWidth = state.brushSize;
-                }
-                ctx.stroke();
-                ctx.restore();
-            }
-        });
-
-        canvas.addEventListener('pointerup', (e) => {
-            if (!state.isDrawing) return;
-            state.isDrawing = false;
-            try { canvas.releasePointerCapture(e.pointerId); } catch(err){}
-            if (state.currentStroke && state.currentStroke.points.length > 0) {
-                state.strokes.push(state.currentStroke);
-                state.currentStroke = null;
-                redrawAll();
-            }
-        });
-
-        function redrawAll() {
-            const rect = viewport.getBoundingClientRect();
-            ctx.clearRect(0, 0, rect.width, rect.height);
-
-            state.strokes.forEach(stroke => {
-                if (!stroke.points || stroke.points.length === 0) return;
-                ctx.save();
-                ctx.beginPath();
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-
-                if (stroke.tool === 'highlighter') {
-                    ctx.globalAlpha = 0.35;
-                    ctx.strokeStyle = stroke.color;
-                    ctx.lineWidth = stroke.size * 3;
-                } else if (stroke.tool === 'eraser') {
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.lineWidth = stroke.size * 4;
-                } else {
-                    ctx.strokeStyle = stroke.color;
-                    ctx.lineWidth = stroke.size;
-                }
-
-                if (stroke.points.length === 1) {
-                    ctx.arc(stroke.points[0].x, stroke.points[0].y, stroke.size / 2, 0, Math.PI * 2);
-                    ctx.fill();
-                } else {
-                    ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-                    for (let i = 1; i < stroke.points.length - 1; i++) {
-                        const midX = (stroke.points[i].x + stroke.points[i + 1].x) / 2;
-                        const midY = (stroke.points[i].y + stroke.points[i + 1].y) / 2;
-                        ctx.quadraticCurveTo(stroke.points[i].x, stroke.points[i].y, midX, midY);
-                    }
-                    const last = stroke.points[stroke.points.length - 1];
-                    ctx.lineTo(last.x, last.y);
-                    ctx.stroke();
-                }
-                ctx.restore();
-            });
-        }
-
-        // --- MATHEMATICAL AI NEATIFY ENGINE (RDP + CHAIKIN) ---
-        function simplifyRDP(points, epsilon) {
-            if (points.length <= 2) return points;
-            let dmax = 0, index = 0;
-            const end = points.length - 1;
-
-            for (let i = 1; i < end; i++) {
-                const d = distToSegment(points[i], points[0], points[end]);
-                if (d > dmax) {
-                    index = i;
-                    dmax = d;
-                }
-            }
-
-            if (dmax > epsilon) {
-                const rec1 = simplifyRDP(points.slice(0, index + 1), epsilon);
-                const rec2 = simplifyRDP(points.slice(index), epsilon);
-                return rec1.slice(0, -1).concat(rec2);
-            }
-            return [points[0], points[end]];
-        }
-
-        function distToSegment(p, v, w) {
-            const l2 = Math.hypot(v.x - w.x, v.y - w.y) ** 2;
-            if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
-            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-            t = Math.max(0, Math.min(1, t));
-            return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
-        }
-
-        function chaikinSmooth(points, iterations = 2) {
-            if (points.length <= 2) return points;
-            let curr = points;
-            for (let it = 0; it < iterations; it++) {
-                const refined = [curr[0]];
-                for (let i = 0; i < curr.length - 1; i++) {
-                    const p0 = curr[i], p1 = curr[i + 1];
-                    refined.push({ x: 0.75 * p0.x + 0.25 * p1.x, y: 0.75 * p0.y + 0.25 * p1.y });
-                    refined.push({ x: 0.25 * p0.x + 0.75 * p1.x, y: 0.25 * p0.y + 0.75 * p1.y });
-                }
-                refined.push(curr[curr.length - 1]);
-                curr = refined;
-            }
-            return curr;
-        }
-
-        function executeNeatify() {
-            if (state.strokes.length === 0) {
-                showToast("Draw something on the canvas first!");
-                return;
-            }
-
-            // Laser scan animation
-            const scanLine = document.getElementById('scanLine');
-            scanLine.classList.remove('active');
-            void scanLine.offsetWidth;
-            scanLine.classList.add('active');
-
-            setTimeout(() => {
-                state.strokes = state.strokes.map(st => {
-                    if (st.points.length <= 2 || st.tool === 'eraser') return st;
-                    const simplified = simplifyRDP(st.points, 2.5);
-                    const smoothed = chaikinSmooth(simplified, 2);
-                    return { ...st, points: smoothed };
-                });
-                redrawAll();
-                showToast("✨ Doodle Neatified! Jitter removed.");
-            }, 350);
-        }
-
-        document.getElementById('navNeatifyBtn').addEventListener('click', executeNeatify);
-
-        // --- TOOLBAR CONTROLS ---
-        const toolPen = document.getElementById('toolPen');
-        const toolHighlighter = document.getElementById('toolHighlighter');
-        const toolEraser = document.getElementById('toolEraser');
-
-        function setActiveTool(tool, btn) {
-            state.tool = tool;
-            [toolPen, toolHighlighter, toolEraser].forEach(b => {
-                b.classList.remove('bg-brandYellow');
-                b.classList.add('bg-white');
-            });
-            btn.classList.add('bg-brandYellow');
-            btn.classList.remove('bg-white');
-        }
-
-        toolPen.addEventListener('click', () => setActiveTool('pen', toolPen));
-        toolHighlighter.addEventListener('click', () => setActiveTool('highlighter', toolHighlighter));
-        toolEraser.addEventListener('click', () => setActiveTool('eraser', toolEraser));
-
-        // Colors
-        document.querySelectorAll('.color-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-black'));
-                btn.classList.add('ring-2', 'ring-black');
-                state.color = btn.getAttribute('data-color');
-                if (state.tool === 'eraser') setActiveTool('pen', toolPen);
-            });
-        });
-
-        // Brush slider
-        const brushSlider = document.getElementById('brushSize');
-        const brushDisplay = document.getElementById('brushSizeDisplay');
-        brushSlider.addEventListener('input', (e) => {
-            state.brushSize = parseInt(e.target.value);
-            brushDisplay.innerText = state.brushSize + 'px';
-        });
-
-        // Paper sheets
-        document.querySelectorAll('.paper-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const paper = btn.getAttribute('data-paper');
-                viewport.classList.remove('paper-grid', 'paper-lined', 'paper-dots', 'paper-dark');
-                viewport.classList.add(paper);
-                state.currentPaper = paper;
-            });
-        });
-
-        // Undo & Redo & Clear
-        document.getElementById('undoBtn').addEventListener('click', () => {
-            if (state.strokes.length > 0) {
-                state.redoStack.push(state.strokes.pop());
-                redrawAll();
-            }
-        });
-
-        document.getElementById('redoBtn').addEventListener('click', () => {
-            if (state.redoStack.length > 0) {
-                state.strokes.push(state.redoStack.pop());
-                redrawAll();
-            }
-        });
-
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            if (confirm("Clear all doodles on the canvas?")) {
-                state.strokes = [];
-                state.redoStack = [];
-                redrawAll();
-            }
-        });
-
-        // Save PNG
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = `doodlesquad-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            showToast("📥 Canvas saved as PNG!");
-        });
-
-        // --- DRAGGABLE STICKY NOTES & STICKERS ---
-        function makeDraggable(el) {
-            let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-            el.onpointerdown = (e) => {
-                if (e.target.tagName === 'TEXTAREA' || e.target.classList.contains('delete-note')) return;
-                e.preventDefault();
-                p3 = e.clientX;
-                p4 = e.clientY;
-                document.onpointermove = (ev) => {
-                    ev.preventDefault();
-                    p1 = p3 - ev.clientX;
-                    p2 = p4 - ev.clientY;
-                    p3 = ev.clientX;
-                    p4 = ev.clientY;
-                    el.style.top = (el.offsetTop - p2) + "px";
-                    el.style.left = (el.offsetLeft - p1) + "px";
-                };
-                document.onpointerup = () => {
-                    document.onpointermove = null;
-                    document.onpointerup = null;
-                };
-            };
-        }
-
-        document.querySelectorAll('.sticky-note, .canvas-sticker').forEach(makeDraggable);
-
-        // Delete note
-        viewport.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-note')) {
-                const note = e.target.closest('.sticky-note');
-                if (note) note.remove();
-            }
-        });
-
-        // Add sticky note
-        const noteColors = ['bg-amber-100', 'bg-rose-100', 'bg-sky-100', 'bg-emerald-100', 'bg-purple-100'];
-        document.getElementById('addStickyBtn').addEventListener('click', () => {
-            const note = document.createElement('div');
-            const color = noteColors[Math.floor(Math.random() * noteColors.length)];
-            const rot = Math.floor(Math.random() * 8) - 4;
-            note.className = `sticky-note absolute p-3 w-48 ${color} z-20 font-patrick rounded-sm cursor-grab`;
-            note.style.top = '60px';
-            note.style.left = '60px';
-            note.style.transform = `rotate(${rot}deg)`;
-            note.innerHTML = `
-                <div class="flex justify-between items-center border-b border-gray-400/30 pb-1 mb-1 text-xs">
-                    <span class="font-bold text-gray-800">📌 New Note</span>
-                    <button class="delete-note text-gray-500 hover:text-red-500 font-bold">✕</button>
-                </div>
-                <textarea class="w-full bg-transparent resize-none outline-none font-patrick text-lg text-gray-800 leading-tight h-20" placeholder="Type here..."></textarea>
-            `;
-            viewport.appendChild(note);
-            makeDraggable(note);
-            showToast("Added Sticky Note!");
-        });
-
-        // Add sticker from toolbar
-        document.querySelectorAll('.sticker-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                stampSticker(btn.getAttribute('data-emoji'));
-            });
-        });
-
-        function stampSticker(emoji) {
-            const sticker = document.createElement('div');
-            sticker.className = 'canvas-sticker z-20 text-4xl';
-            sticker.innerText = emoji;
-            sticker.style.top = Math.floor(Math.random() * 150 + 80) + 'px';
-            sticker.style.left = Math.floor(Math.random() * 250 + 80) + 'px';
-            viewport.appendChild(sticker);
-            makeDraggable(sticker);
-            showToast(`Stamped ${emoji} onto board!`);
-        }
-
-        // --- WORKING SQUAD CHAT SYSTEM ---
-        const chatFeed = document.getElementById('chatFeed');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-
-        const peerReplies = [
-            { name: 'Devon', text: 'Nice sketch! That layout looks super clean.' },
-            { name: 'Maya', text: 'Agreed! Make sure we test it before the pitch presentation.' },
-            { name: 'Chloe', text: 'Loved that last note! Stamped another star ⭐ on the canvas.' }
-        ];
-
-        chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const msg = chatInput.value.trim();
-            if (!msg) return;
-
-            // Render user message
-            const userBubble = document.createElement('div');
-            userBubble.className = 'bg-brandYellow/40 p-2 rounded sketch-border-sm';
-            userBubble.innerHTML = `<span class="font-bold text-gray-900">You (${state.activeAvatar}):</span><p class="text-gray-800 font-patrick text-sm">${escapeHtml(msg)}</p>`;
-            chatFeed.appendChild(userBubble);
-            chatInput.value = '';
-            chatFeed.scrollTop = chatFeed.scrollHeight;
-
-            // Simulated teammate reply after 1.5s
-            setTimeout(() => {
-                const randomReply = peerReplies[Math.floor(Math.random() * peerReplies.length)];
-                const peerBubble = document.createElement('div');
-                peerBubble.className = 'bg-white p-2 rounded sketch-border-sm';
-                peerBubble.innerHTML = `<span class="font-bold text-brandBlue">${randomReply.name}:</span><p class="text-gray-800 font-patrick text-sm">${randomReply.text}</p>`;
-                chatFeed.appendChild(peerBubble);
-                chatFeed.scrollTop = chatFeed.scrollHeight;
-            }, 1200);
-        });
-
-        // Quick Cheers
-        document.querySelectorAll('.cheer-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const emoji = btn.getAttribute('data-cheer');
-                const bubble = document.createElement('div');
-                bubble.className = 'bg-brandMint/30 p-1.5 rounded sketch-border-sm text-center font-bold text-xs';
-                bubble.innerText = `You cheered: ${emoji} to the squad!`;
-                chatFeed.appendChild(bubble);
-                chatFeed.scrollTop = chatFeed.scrollHeight;
-            });
-        });
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        // --- AVATAR CLASS CARD SELECTION ---
-        document.querySelectorAll('.avatar-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('avatar-selected'));
-                card.classList.add('avatar-selected');
-                
-                const avatarName = card.getAttribute('data-avatar');
-                const emoji = card.getAttribute('data-emoji');
-                state.activeAvatar = avatarName;
-                state.activeEmoji = emoji;
-
-                // Update badge & stamp on board
-                document.getElementById('activeAvatarBadge').innerText = `Avatar: ${avatarName}`;
-                stampSticker(emoji);
-                showToast(`Equipped ${avatarName}!`);
-            });
-        });
-
-        // Copy room code
-        document.getElementById('copyInviteBtn').addEventListener('click', () => {
-            navigator.clipboard.writeText(window.location.href);
-            showToast("Copied SQUAD-8492 link to clipboard!");
-        });
-
-        // Init layout
-        window.addEventListener('load', resizeCanvas);
-    </script>
-</body>
-</html>
+            <!-- Filter Categories & Sort -->
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap gap-2">
+                    <button class="sketch-button bg-gray-900 text-white px-4 py-1.5 text-xs sm:text-sm font-bold">All</button>
+                    <button class="sketch-button bg-white hover:bg-gray-100 px-4 py-1.5 text-xs sm:text-sm font-bold">Math</button>
+                    <button class="sketch-button bg-white hover:bg-gray-100 px-4 py-1.5 text-xs sm:text-sm font-bold">Science</button>
+                    <button class="sketch-button bg-white hover:bg-gray-100 px-4 py-1
